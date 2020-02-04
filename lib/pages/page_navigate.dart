@@ -65,6 +65,7 @@ class _NavigationPageState extends State<NavigationPage> {
   void initState() {
     super.initState();
 
+    /*
     _position = new CameraPosition(
         target: LatLng(41.4163469, 2.1768663),
         tilt: 0,
@@ -72,7 +73,8 @@ class _NavigationPageState extends State<NavigationPage> {
         zoom: 18.0
     );
 
-    /*
+     */
+
     final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
     geolocator
@@ -86,7 +88,7 @@ class _NavigationPageState extends State<NavigationPage> {
           );
     });
 
-     */
+     
 
     hasToDisplayInfo = false;
 
