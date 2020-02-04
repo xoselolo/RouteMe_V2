@@ -72,7 +72,7 @@ class _NavigationPageState extends State<NavigationPage> {
         zoom: 18.0
     );
 
-    
+
     /*
     final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
