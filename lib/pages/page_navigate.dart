@@ -162,10 +162,19 @@ class _NavigationPageState extends State<NavigationPage> {
               (Position position) async {
 
                 actualPosition = position;
+                googleMapcontroller.animateCamera(GoogleMapsFlutter.CameraUpdate.newCameraPosition(
+                    GoogleMapsFlutter.CameraPosition(
+                        target: GoogleMapsFlutter.LatLng(actualPosition.latitude, actualPosition.longitude),
+                        zoom: 18,
+                        tilt: 0,
+                        bearing: 0
+                    )
+                ));
+
                 step = await NavigationManager.request(stops, initialPosition, nextStop, actualPosition, distanceRemaining);
 
                 if(step.toStopDistance){
-                  // todo: mostrar bottom navigation sheet de next stop
+
                   showBottomSheet(context: context, builder: (context) => Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(const Radius.circular(16.0)),
@@ -205,6 +214,10 @@ class _NavigationPageState extends State<NavigationPage> {
                   ));
 
                   nextStop++;
+                  if(nextStop == stops.length){
+                    // hem acabat la ruta
+                    Navigator.pop(context);
+                  }
                 }
 
                 indication = step.instruction;
