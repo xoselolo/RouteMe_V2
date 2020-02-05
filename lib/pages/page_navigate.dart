@@ -46,6 +46,10 @@ class _NavigationPageState extends State<NavigationPage> {
   BitmapDescriptor pinLocationIcon;
 
   // ------------------------ new DATA ELEMENTS ----------------------
+  Position initialPosition;
+  Position actualPosition;
+  StepManeuver step;
+
   double distanceRemaining, durationRemaining;
   bool arrived;
   int nextStop;
@@ -57,17 +61,15 @@ class _NavigationPageState extends State<NavigationPage> {
   MapboxMap mapboxMap;
   MapboxMapController mapController;
   CameraPosition _position;
-  bool _isMoving = false;
-  bool _compassEnabled = true;
+  bool _compassEnabled = false;
   CameraTargetBounds _cameraTargetBounds = CameraTargetBounds.unbounded;
   MinMaxZoomPreference _minMaxZoomPreference = MinMaxZoomPreference.unbounded;
   String _styleString = MapboxStyles.LIGHT;
-  bool _rotateGesturesEnabled = true;
-  bool _scrollGesturesEnabled = true;
-  bool _tiltGesturesEnabled = true;
-  bool _zoomGesturesEnabled = true;
+  bool _rotateGesturesEnabled = false;
+  bool _scrollGesturesEnabled = false;
+  bool _tiltGesturesEnabled = false;
+  bool _zoomGesturesEnabled = false;
   bool _myLocationEnabled = true;
-  bool _telemetryEnabled = true;
   MyLocationTrackingMode _myLocationTrackingMode = MyLocationTrackingMode.Tracking;
 
   // ------------------------- IMPORTANT FUNCTIONS -----------------------
@@ -79,19 +81,23 @@ class _NavigationPageState extends State<NavigationPage> {
     arrived = false;
     nextStop = 0;
     infoStop = stops.elementAt(nextStop);
+    distanceRemaining = 0;
+    durationRemaining = 0;
 
     final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
     geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) async {
+          initialPosition = position;
+          actualPosition = position;
           _position = new CameraPosition(
               target: LatLng(position.latitude, position.longitude),
               tilt: 0,
               bearing: 00,
-              zoom: 18.0
+              zoom: 20.0
           );
 
-          Map body = await NavigationManager.request(stops, _position.target, nextStop);
+          step = await NavigationManager.request(stops, initialPosition, nextStop, actualPosition, distanceRemaining);
 
           print("Number of stops" + stops.length.toString());
     });
@@ -104,7 +110,7 @@ class _NavigationPageState extends State<NavigationPage> {
   }
   void _extractMapInfo() {
     _position = mapController.cameraPosition;
-    _isMoving = mapController.isCameraMoving;
+    //_isMoving = mapController.isCameraMoving;
   }
   void onMapCreated(MapboxMapController controller) {
     mapController = controller;
@@ -124,15 +130,15 @@ class _NavigationPageState extends State<NavigationPage> {
         onMapCreated: onMapCreated,
         initialCameraPosition: _position,
         trackCameraPosition: true,
-        compassEnabled: false,
+        compassEnabled: _compassEnabled,
         cameraTargetBounds: _cameraTargetBounds,
         minMaxZoomPreference: _minMaxZoomPreference,
         styleString: _styleString,
-        rotateGesturesEnabled: true, // true
-        scrollGesturesEnabled: true, // true
-        tiltGesturesEnabled: true, // true
-        zoomGesturesEnabled: true, // true
-        myLocationEnabled: true, // true
+        rotateGesturesEnabled: _rotateGesturesEnabled, // true
+        scrollGesturesEnabled: _scrollGesturesEnabled, // true
+        tiltGesturesEnabled: _tiltGesturesEnabled, // true
+        zoomGesturesEnabled: _zoomGesturesEnabled, // true
+        myLocationEnabled: _myLocationEnabled, // true
         myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
         onMapClick: (point, latLng) {
           print(point.toString());

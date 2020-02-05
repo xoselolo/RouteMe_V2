@@ -180,7 +180,7 @@ class _OrganizerPageState extends State<OrganizerPage> {
         polylineId: new PolylineId(polylineString),
         color: Colors.amber,
         points: polylinePoints,
-        width: 7
+        width: 5
     );
 
     mapMarkers = new Set<Marker>();
@@ -310,8 +310,8 @@ class _OrganizerPageState extends State<OrganizerPage> {
               },
               initialCameraPosition: CameraPosition(
                   target: LatLng(destinyPosition.latitude, destinyPosition.longitude),
-                  tilt: 50.0,
-                  bearing: 45.0,
+                  tilt: 0,
+                  bearing: 0,
                   zoom: 18.0
               ),
               myLocationEnabled: true,
