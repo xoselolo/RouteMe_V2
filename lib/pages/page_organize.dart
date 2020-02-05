@@ -248,16 +248,8 @@ class _OrganizerPageState extends State<OrganizerPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => NavigationPage(
-                              initialLatitude: initialLatitude,
-                              initialLongitude: initialLongitude,
-                              polylineString: polylineString,
                               stops: stops,
-                              position:  new MAP.CameraPosition(
-                                  target: MAP.LatLng(stops.elementAt(0).latitude, stops.elementAt(0).longitude),
-                                  tilt: 0,
-                                  bearing: 00,
-                                  zoom: 18.0
-                              ),
+                              mapMarkers: mapMarkers,
                             )
                           )
                         );

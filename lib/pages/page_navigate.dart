@@ -1,49 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_route_me/model/model_stop.dart';
 import 'package:flutter_route_me/model/request_manager/navigation_manager.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as GoogleMapsFlutter;
 import 'package:mapbox_gl/mapbox_gl.dart';
 
 class NavigationPage extends StatefulWidget {
-  NavigationPage({Key key, this.initialLatitude, this.initialLongitude,
-    this.polylinePoints, this.polylineString,
-    this.pinLocationIcon, this.stops, this.position}) : super(key: key);
+  NavigationPage({Key key, this.stops, this.mapMarkers}) : super(key: key);
 
   // ----------------------------- DATA ELEMENTS --------------------------
-  double initialLatitude;
-  double initialLongitude;
-
   List<Stop> stops;
-
-  List<LatLng> polylinePoints = new List<LatLng>();
-  String polylineString;
-
-  BitmapDescriptor pinLocationIcon;
-
-  CameraPosition position;
+  Set<GoogleMapsFlutter.Marker> mapMarkers;
 
   @override
-  _NavigationPageState createState() => _NavigationPageState(this.initialLatitude,
-      this.initialLongitude, this.polylinePoints,
-      this.polylineString, this.pinLocationIcon, this.stops, this.position);
+  _NavigationPageState createState() => _NavigationPageState(this.stops, this.mapMarkers);
 }
 
 
 class _NavigationPageState extends State<NavigationPage> {
 
   // Constructor
-  _NavigationPageState(this.initialLatitude, this.initialLongitude,
-      this.polylinePoints, this.polylineString,
-      this.pinLocationIcon, this.stops, this._position);
+  _NavigationPageState(this.stops, this.mapMarkers);
 
   // ------------------------ DATA ELEMENTS from prev ----------------------
   double initialLatitude;
   double initialLongitude;
   List<Stop> stops;
-  List<LatLng> polylinePoints = new List<LatLng>();
-  String polylineString;
-  BitmapDescriptor pinLocationIcon;
 
   // ------------------------ new DATA ELEMENTS ----------------------
   Position initialPosition;
@@ -57,20 +41,20 @@ class _NavigationPageState extends State<NavigationPage> {
   bool hasToDisplayInfo = false;
   bool finished = false;
 
+  // ---------------------------- INDICATIONS ------------------------------
+  String indication;
+  String metres;
+  Icon iconIndicator;
+
   // -------------------------- MAP ELEMENTS  ------------------------
-  MapboxMap mapboxMap;
-  MapboxMapController mapController;
-  CameraPosition _position;
-  bool _compassEnabled = false;
-  CameraTargetBounds _cameraTargetBounds = CameraTargetBounds.unbounded;
-  MinMaxZoomPreference _minMaxZoomPreference = MinMaxZoomPreference.unbounded;
-  String _styleString = MapboxStyles.LIGHT;
-  bool _rotateGesturesEnabled = false;
-  bool _scrollGesturesEnabled = false;
-  bool _tiltGesturesEnabled = false;
-  bool _zoomGesturesEnabled = false;
-  bool _myLocationEnabled = true;
-  MyLocationTrackingMode _myLocationTrackingMode = MyLocationTrackingMode.Tracking;
+  List<GoogleMapsFlutter.LatLng> polylinePoints = new List<GoogleMapsFlutter.LatLng>();
+  String polylineString;
+  GoogleMapsFlutter.BitmapDescriptor pinLocationIcon;
+  Set<GoogleMapsFlutter.Marker> mapMarkers = new Set<GoogleMapsFlutter.Marker>();
+  Set<GoogleMapsFlutter.Polyline> polylines = new Set<GoogleMapsFlutter.Polyline>();
+
+  GoogleMapsFlutter.GoogleMapController googleMapcontroller;
+
 
   // ------------------------- IMPORTANT FUNCTIONS -----------------------
   @override
@@ -84,66 +68,133 @@ class _NavigationPageState extends State<NavigationPage> {
     distanceRemaining = 0;
     durationRemaining = 0;
 
+    indication = "";
+    metres = "";
+    iconIndicator = new Icon(
+      Icons.arrow_upward,
+      color: Colors.red[400],
+    );
+
+    polylines = new Set<GoogleMapsFlutter.Polyline>();
+    GoogleMapsFlutter.BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(
+            devicePixelRatio: 2.5,
+            size: Size(2.0, 2.0)
+        ),
+        'assets/markers/marcador.png')
+        .then((onValue) {
+          pinLocationIcon = onValue;
+        }
+    );
+
     final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
     geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) async {
           initialPosition = position;
           actualPosition = position;
-          _position = new CameraPosition(
-              target: LatLng(position.latitude, position.longitude),
-              tilt: 0,
-              bearing: 00,
-              zoom: 20.0
-          );
+
+          googleMapcontroller.animateCamera(GoogleMapsFlutter.CameraUpdate.newCameraPosition(
+              GoogleMapsFlutter.CameraPosition(
+                  target: GoogleMapsFlutter.LatLng(initialPosition.latitude, initialPosition.longitude),
+                  zoom: 18,
+                  tilt: 0,
+                  bearing: 0
+              )
+          ));
 
           step = await NavigationManager.request(stops, initialPosition, nextStop, actualPosition, distanceRemaining);
 
+          indication = step.instruction;
+          metres = "For " + step.stepDistance.toString() + " metres";
+          if(step.type.compareTo("turn") == 0){
+            if(step.modifier.compareTo("left") == 0){
+              iconIndicator = new Icon(
+                Icons.arrow_back,
+                color: Colors.red[400],
+              );
+            }else{
+              iconIndicator = new Icon(
+                Icons.arrow_forward,
+                color: Colors.red[400],
+              );
+            }
+          }else{
+            iconIndicator = new Icon(
+              Icons.arrow_upward,
+              color: Colors.red[400],
+            );
+          }
+
+          List<PointLatLng> points = NetworkUtil().decodeEncodedPolyline(step.polyline);
+          polylinePoints = new List<GoogleMapsFlutter.LatLng>();
+          points.forEach((PointLatLng point){
+            polylinePoints.add(new GoogleMapsFlutter.LatLng(point.latitude, point.longitude));
+          });
+
+          GoogleMapsFlutter.Polyline polyline = new GoogleMapsFlutter.Polyline(
+              polylineId: new GoogleMapsFlutter.PolylineId(step.polyline),
+              color: Colors.amber[700],
+              points: polylinePoints,
+              width: 5
+          );
+
+          polylines.add(polyline);
+
           print("Number of stops" + stops.length.toString());
+
+          setState(() {
+
+          });
+
     });
   }
 
-  void _onMapChanged() {
-    setState(() {
-      _extractMapInfo();
+  /*
+  _position = new CameraPosition(
+    target: LatLng(position.latitude, position.longitude),
+    tilt: 0,
+    bearing: 00,
+    zoom: 20.0
+  );
+
+
+  List<PointLatLng> points = NetworkUtil().decodeEncodedPolyline(polylineString);
+    polylinePoints = new List<LatLng>();
+    points.forEach((PointLatLng point){
+      polylinePoints.add(new LatLng(point.latitude, point.longitude));
     });
-  }
-  void _extractMapInfo() {
-    _position = mapController.cameraPosition;
-    //_isMoving = mapController.isCameraMoving;
-  }
-  void onMapCreated(MapboxMapController controller) {
-    mapController = controller;
-    mapController.addListener(_onMapChanged);
-    _extractMapInfo();
-  }
+
+    Polyline polyline = new Polyline(
+        polylineId: new PolylineId(polylineString),
+        color: Colors.amber[700],
+        points: polylinePoints,
+        width: 5
+    );
+
+
+    googleMapcontroller.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(
+        target: LatLng(initialLatitude, initialLongitude),
+        zoom: 13,
+        tilt: 0,
+        bearing: 0
+      )
+    ));
+
+    setState(() {
+      polylines = new Set<Polyline>();
+      polylines.add(polyline);
+    });
+   */
 
   @override
   void dispose() {
-    mapController.removeListener(_onMapChanged);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    mapboxMap = MapboxMap(
-        onMapCreated: onMapCreated,
-        initialCameraPosition: _position,
-        trackCameraPosition: true,
-        compassEnabled: _compassEnabled,
-        cameraTargetBounds: _cameraTargetBounds,
-        minMaxZoomPreference: _minMaxZoomPreference,
-        styleString: _styleString,
-        rotateGesturesEnabled: _rotateGesturesEnabled, // true
-        scrollGesturesEnabled: _scrollGesturesEnabled, // true
-        tiltGesturesEnabled: _tiltGesturesEnabled, // true
-        zoomGesturesEnabled: _zoomGesturesEnabled, // true
-        myLocationEnabled: _myLocationEnabled, // true
-        myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
-        onMapClick: (point, latLng) {
-          print(point.toString());
-        },
-    );
 
     return Scaffold(
       appBar: RouteMeAppBar(),
@@ -156,7 +207,21 @@ class _NavigationPageState extends State<NavigationPage> {
       ),
       body: Stack(
         children: <Widget>[
-          mapboxMap,
+          GoogleMapsFlutter.GoogleMap(
+            mapToolbarEnabled: true,
+            markers: mapMarkers,
+            polylines: polylines,
+            onMapCreated: (GoogleMapsFlutter.GoogleMapController controller) async {
+              googleMapcontroller = controller;
+            },
+            initialCameraPosition: GoogleMapsFlutter.CameraPosition(
+                target: GoogleMapsFlutter.LatLng(stops.elementAt(0).latitude, stops.elementAt(0).longitude),
+                tilt: 0,
+                bearing: 0,
+                zoom: 18.0
+            ),
+            myLocationEnabled: true,
+          ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8),
             child: Column(
@@ -182,13 +247,11 @@ class _NavigationPageState extends State<NavigationPage> {
                   child: ListTile(
                     dense: false,
                     leading: CircleAvatar(
-                      child: Icon(
-                        Icons.arrow_upward,
-                        color: Colors.red[300],
-                        size: 50,
-                      ),
+                      child: iconIndicator,
                       backgroundColor: Colors.transparent,
                     ),
+                    title: Text(indication),
+                    subtitle: Text(metres),
                   ),
                 ),
               ],
@@ -196,105 +259,6 @@ class _NavigationPageState extends State<NavigationPage> {
           )
         ],
       ),
-    );
-  }
-
-
-// ------------------------ NOT USED FUNTIONS ------------------------
-  Widget _myLocationTrackingModeCycler() {
-    final MyLocationTrackingMode nextType =
-    MyLocationTrackingMode.values[(_myLocationTrackingMode.index + 1) % MyLocationTrackingMode.values.length];
-    return FlatButton(
-      child: Text('change to $nextType'),
-      onPressed: () {
-        setState(() {
-          _myLocationTrackingMode = nextType;
-        });
-      },
-    );
-  }
-  Widget _compassToggler() {
-    return FlatButton(
-      child: Text('${_compassEnabled ? 'disable' : 'enable'} compasss'),
-      onPressed: () {
-        setState(() {
-          _compassEnabled = !_compassEnabled;
-        });
-      },
-    );
-  }
-  Widget _zoomBoundsToggler() {
-    return FlatButton(
-      child: Text(_minMaxZoomPreference.minZoom == null
-          ? 'bound zoom'
-          : 'release zoom'),
-      onPressed: () {
-        setState(() {
-          _minMaxZoomPreference = _minMaxZoomPreference.minZoom == null
-              ? const MinMaxZoomPreference(12.0, 16.0)
-              : MinMaxZoomPreference.unbounded;
-        });
-      },
-    );
-  }
-  Widget _setStyleToSatellite() {
-    return FlatButton(
-      child: Text('change map style to Satellite'),
-      onPressed: () {
-        setState(() {
-          _styleString = MapboxStyles.SATELLITE;
-        });
-      },
-    );
-  }
-  Widget _rotateToggler() {
-    return FlatButton(
-      child: Text('${_rotateGesturesEnabled ? 'disable' : 'enable'} rotate'),
-      onPressed: () {
-        setState(() {
-          _rotateGesturesEnabled = !_rotateGesturesEnabled;
-        });
-      },
-    );
-  }
-  Widget _scrollToggler() {
-    return FlatButton(
-      child: Text('${_scrollGesturesEnabled ? 'disable' : 'enable'} scroll'),
-      onPressed: () {
-        setState(() {
-          _scrollGesturesEnabled = !_scrollGesturesEnabled;
-        });
-      },
-    );
-  }
-  Widget _tiltToggler() {
-    return FlatButton(
-      child: Text('${_tiltGesturesEnabled ? 'disable' : 'enable'} tilt'),
-      onPressed: () {
-        setState(() {
-          _tiltGesturesEnabled = !_tiltGesturesEnabled;
-        });
-      },
-    );
-  }
-  Widget _zoomToggler() {
-    return FlatButton(
-      child: Text('${_zoomGesturesEnabled ? 'disable' : 'enable'} zoom'),
-      onPressed: () {
-        setState(() {
-          _zoomGesturesEnabled = !_zoomGesturesEnabled;
-        });
-      },
-    );
-  }
-  Widget _myLocationToggler() {
-    return FlatButton(
-      child: Text('${_myLocationEnabled ? 'disable' : 'enable'} my location'),
-      onPressed: () {
-        setState(() {
-          _myLocationEnabled = !_myLocationEnabled;
-        });
-      },
     );
   }
 
