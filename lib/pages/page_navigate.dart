@@ -173,7 +173,7 @@ class _NavigationPageState extends State<NavigationPage> {
 
                 step = await NavigationManager.request(stops, initialPosition, nextStop, actualPosition, distanceRemaining);
 
-                if(step.toStopDistance){
+                if(step.finish){
 
                   showBottomSheet(context: context, builder: (context) => Container(
                     decoration: BoxDecoration(
