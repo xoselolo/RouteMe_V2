@@ -178,7 +178,7 @@ class _OrganizerPageState extends State<OrganizerPage> {
 
     Polyline polyline = new Polyline(
         polylineId: new PolylineId(polylineString),
-        color: Colors.amber,
+        color: Colors.amber[700],
         points: polylinePoints,
         width: 5
     );
