@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_route_me/model/model_stop.dart';
+import 'package:flutter_route_me/model/request_manager/navigation_manager.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
@@ -74,6 +75,11 @@ class _NavigationPageState extends State<NavigationPage> {
   void initState() {
     super.initState();
 
+    hasToDisplayInfo = false;
+    arrived = false;
+    nextStop = 0;
+    infoStop = stops.elementAt(nextStop);
+
     final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
     geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
@@ -84,12 +90,11 @@ class _NavigationPageState extends State<NavigationPage> {
               bearing: 00,
               zoom: 18.0
           );
+
+          Map body = await NavigationManager.request(stops, _position.target, nextStop);
+
+          print("Number of stops" + stops.length.toString());
     });
-    
-    hasToDisplayInfo = false;
-    arrived = false;
-    nextStop = 0;
-    infoStop = stops.elementAt(nextStop);
   }
 
   void _onMapChanged() {
