@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_route_me/model/model_stop.dart';
 import 'package:flutter_route_me/model/request_manager/navigation_manager.dart';
+import 'package:flutter_route_me/model/request_manager/places_manager.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as GoogleMapsFlutter;
@@ -41,6 +44,8 @@ class _NavigationPageState extends State<NavigationPage> {
   bool hasToDisplayInfo = false;
   bool finished = false;
 
+  PlacesManager placesManager;
+
   // ---------------------------- INDICATIONS ------------------------------
   String indication;
   String metres;
@@ -55,11 +60,14 @@ class _NavigationPageState extends State<NavigationPage> {
 
   GoogleMapsFlutter.GoogleMapController googleMapcontroller;
 
+  StreamSubscription<Position> positionStream;
 
   // ------------------------- IMPORTANT FUNCTIONS -----------------------
   @override
   void initState() {
     super.initState();
+
+    placesManager = new PlacesManager();
 
     hasToDisplayInfo = false;
     arrived = false;
@@ -143,9 +151,105 @@ class _NavigationPageState extends State<NavigationPage> {
 
           print("Number of stops" + stops.length.toString());
 
+          var geolocator = Geolocator();
+          var locationOptions = LocationOptions(accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 40);
+
           setState(() {
 
           });
+
+          positionStream = geolocator.getPositionStream(locationOptions).listen(
+              (Position position) async {
+
+                actualPosition = position;
+                step = await NavigationManager.request(stops, initialPosition, nextStop, actualPosition, distanceRemaining);
+
+                if(step.toStopDistance){
+                  // todo: mostrar bottom navigation sheet de next stop
+                  showBottomSheet(context: context, builder: (context) => Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(const Radius.circular(16.0)),
+                    ),
+                    color: Colors.red[100],
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        CircleAvatar(
+                          child: SizedBox(
+                            width: 200,
+                            height: 200,
+                            child: ClipOval(
+                              child: FadeInImage.assetNetwork(
+                                image: placesManager.PLACE_PHOTO_BASE_URL
+                                    + placesManager.PLACE_PHOTO_MAXH
+                                    + "2000"
+                                    + placesManager.PLACE_PHOTO_MAXW
+                                    + "2000"
+                                    + placesManager.PLACE_PHOTO_REFERENCE
+                                    + stops.elementAt(nextStop).photo
+                                    + placesManager.API_KEY
+                                ,
+                                placeholder: 'assets/markers/marcador.png',
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Center(
+                          child: Text(stops.elementAt(nextStop).name),
+                        )
+                      ],
+                    ),
+                  ));
+
+                  nextStop++;
+                }
+
+                indication = step.instruction;
+                if(step.type.compareTo("turn") == 0){
+                  metres = "";
+                  if(step.modifier.compareTo("left") == 0){
+                    iconIndicator = new Icon(
+                      Icons.arrow_back,
+                      color: Colors.red[400],
+                    );
+                  }else{
+                    iconIndicator = new Icon(
+                      Icons.arrow_forward,
+                      color: Colors.red[400],
+                    );
+                  }
+                }else{
+                  metres = "For " + step.stepDistance.toString() + " metres";
+                  iconIndicator = new Icon(
+                    Icons.arrow_upward,
+                    color: Colors.red[400],
+                  );
+                }
+
+                if(step.routeIsLarger){
+                  List<PointLatLng> points = NetworkUtil().decodeEncodedPolyline(step.polyline);
+                  polylinePoints = new List<GoogleMapsFlutter.LatLng>();
+                  points.forEach((PointLatLng point){
+                    polylinePoints.add(new GoogleMapsFlutter.LatLng(point.latitude, point.longitude));
+                  });
+
+                  GoogleMapsFlutter.Polyline polyline = new GoogleMapsFlutter.Polyline(
+                      polylineId: new GoogleMapsFlutter.PolylineId(step.polyline),
+                      color: Colors.amber[700],
+                      points: polylinePoints,
+                      width: 5
+                  );
+
+                  polylines = new Set<GoogleMapsFlutter.Polyline>();
+                  polylines.add(polyline);
+                }
+
+                setState(() {});
+              }
+          );
 
     });
   }
@@ -199,10 +303,21 @@ class _NavigationPageState extends State<NavigationPage> {
     return Scaffold(
       appBar: RouteMeAppBar(),
       bottomNavigationBar: BottomAppBar(
-        //color: Colors.red[200],
+        color: Colors.red[100],
         shape: CircularNotchedRectangle(),
         child: ListTile(
-          title: Text(stops.elementAt(nextStop).name),
+          leading: CircleAvatar(
+            child: Icon(
+              Icons.play_circle_filled,
+            ),
+          ),
+          title: Text(
+              stops.elementAt(nextStop).name,
+              style: TextStyle(
+                fontWeight: FontWeight.bold
+              ),
+          ),
+          subtitle: Text("Next stop"),
         ),
       ),
       body: Stack(

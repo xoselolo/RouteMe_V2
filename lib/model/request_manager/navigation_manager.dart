@@ -7,7 +7,8 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 class NavigationManager{
 
   static final String NAVIGATION_URL_BASE = "https://api.mapbox.com/directions/v5/mapbox/walking/";
-  static final String NAVIGATION_LAST_PART = "?alternatives=true&geometries=polyline&steps=true&";
+  //static final String NAVIGATION_LAST_PART = "?geometries=polyline&walking_bias=-1&alley_bias=-1&steps=true&";
+  static final String NAVIGATION_LAST_PART = "?geometries=polyline&steps=true&";
   static final String MAPBOX_PUBLIC_TOKEN = "access_token=pk.eyJ1IjoieG9zZWxvbG8zOCIsImEiOiJjazV6dHIwcnQwMHprM25vYWNqMGNwaGUyIn0.HLAQdycXW-AJT8Hc0wi1ag";
 
   // https://api.mapbox.com/directions/v5/mapbox/walking/
@@ -18,6 +19,7 @@ class NavigationManager{
   // access_token=pk.eyJ1IjoieG9zZWxvbG8zOCIsImEiOiJjazV6dHIwcnQwMHprM25vYWNqMGNwaGUyIn0.HLAQdycXW-AJT8Hc0wi1ag
 
 
+  //https://api.mapbox.com/directions/v5/mapbox/walking/2.1304515%2C41.4090757%3B2.1359624%2C41.405842%3B2.14926%2C41.40741999999999%3B2.1743558%2C41.4036299%3B2.1700471%2C41.3870154%3B2.1228198%2C41.380896%3B2.129593%2C41.399951%3B2.1359624%2C41.405842?geometries=polyline&steps=true&&access_token=pk.eyJ1IjoieG9zZWxvbG8zOCIsImEiOiJjazV6dHIwcnQwMHprM25vYWNqMGNwaGUyIn0.HLAQdycXW-AJT8Hc0wi1ag
 
   // https://api.mapbox.com/directions/v5/mapbox/walking/
   // -74.00275269581756%2C40.7446754272157
@@ -71,7 +73,8 @@ class NavigationManager{
       step.type = bodyShort['routes'][0]['legs'][0]['steps'][1]['maneuver']['type'];
       step.latitude = bodyShort['routes'][0]['legs'][0]['steps'][0]['maneuver']['location'][1];
       step.longitude = bodyShort['routes'][0]['legs'][0]['steps'][0]['maneuver']['location'][0];
-      step.instruction = bodyShort['routes'][0]['legs'][0]['steps'][1]['maneuver']['instruction'];
+      step.instruction = bodyShort['routes'][0]['legs'][0]['steps'][0]['maneuver']['instruction'];
+      //step.instruction = bodyShort['routes'][0]['legs'][0]['steps'][1]['maneuver']['instruction'];
 
       if(step.type != StepManeuver.ARRIVE_TAG){
         step.modifier = bodyShort['routes'][0]['legs'][0]['steps'][1]['maneuver']['modifier'];
@@ -90,7 +93,7 @@ class NavigationManager{
       }
 
       if(step.type == StepManeuver.ARRIVE_TAG){
-        if(step.toStopDistance < 150){
+        if(step.toStopDistance < 50){
           step.finish = true;
           step.instruction = "You have arrived to " + stops.elementAt(i).name;
         }else{
