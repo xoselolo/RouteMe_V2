@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_route_me/pages/page_filters.dart';
+import 'package:flutter_route_me/pages/page_main.dart';
 import 'package:flutter_route_me/pages/page_signup.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
 
@@ -70,7 +71,7 @@ class _WelcomePageState extends State<WelcomePage> {
       formState.save();
       try{
         AuthResult authResult = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password);
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FiltersPage()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
       }catch(e){
         print("Firebase auth error!");
         print(e.message);

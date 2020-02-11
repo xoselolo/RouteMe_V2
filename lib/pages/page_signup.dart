@@ -67,7 +67,6 @@ class _SignUpPageState extends State<SignUpPage> {
         AuthResult authResult = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
         authResult.user.sendEmailVerification();
         // TODO: Display for the user that we sent an email
-        Navigator.of(context).pop();
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FiltersPage()));
       }catch(e){
         print("Firebase auth error!");

@@ -70,51 +70,6 @@ class _FiltersPageState extends State<FiltersPage> {
     suggestionsName = new List<String>();
   }
 
-
-/*
-  Future<void> getUserLocation() async {
-    Location location = new Location();
-    LocationData locationData = await location.getLocation();
-
-    userPosition = new Position(
-      longitude: locationData.longitude,
-      latitude: locationData.latitude,
-      timestamp: DateTime.now(),
-      mocked: false,
-      accuracy: 0,
-      altitude: locationData.altitude,
-      heading: locationData.heading,
-      speed: locationData.speed,
-      speedAccuracy: locationData.speedAccuracy
-    );
-
-    HashMap<String, String> placeInfo = await placesManager.geocode(locationData);
-
-    String city = placeInfo.remove(placesManager.LOCALITY_TAG);
-    String country = placeInfo.remove(placesManager.COUNTRY_TAG);
-
-    suggestedStops = new List<Stop>();
-    suggestedStops = await placesManager.searchSuggestedPlaces(city);
-
-    setState(() {
-      textEditingController.text = "${city}, ${country}";
-
-      _cameraPosition = CameraPosition(target: LatLng(userPosition.latitude, userPosition.longitude));
-      googleMapcontroller.animateCamera(
-          CameraUpdate.newCameraPosition(
-              CameraPosition(
-                  target: LatLng(userPosition.latitude, userPosition.longitude),
-                  tilt: 0,
-                  bearing: 00,
-                  zoom: 18.0
-              )
-          )
-      );
-      _controller.complete(googleMapcontroller);
-    });
-  }
-*/
-
   void getUserLocation(){
     final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
