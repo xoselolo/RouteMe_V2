@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_route_me/pages/page_filters.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
 
 class MainPage extends StatefulWidget {
@@ -10,11 +12,18 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
 
   int _currentIndex;
+  PageController _pageController;
 
 
   @override
   void initState() {
+
     _currentIndex = 0;
+
+    _pageController = new PageController(
+      initialPage: _currentIndex,
+      keepPage: true
+    );
   }
 
   @override
@@ -38,15 +47,35 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
         currentIndex: _currentIndex,
-        selectedItemColor: Colors.amber[700],
+        selectedItemColor: Colors.red[700],
         onTap: _onBottomItemTap,
       ),
-      body: Container(),
+      body: PageView(
+        scrollDirection: Axis.horizontal,
+        reverse: false,
+        controller: _pageController,
+        physics: BouncingScrollPhysics(),
+        pageSnapping: true,
+        onPageChanged: _onPageChanged,
+        children: <Widget>[
+          Container(color: Colors.green,),
+          FiltersPage(),
+          Container(color: Colors.pink,)
+        ],
+      ),
     );
   }
 
 
   void _onBottomItemTap(int value) {
+    // TODO
+    setState(() {
+      _currentIndex = value;
+      _pageController.jumpToPage(_currentIndex);
+    });
+  }
+
+  void _onPageChanged(int value) {
     // TODO
     setState(() {
       _currentIndex = value;

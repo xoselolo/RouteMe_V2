@@ -164,7 +164,7 @@ class _FiltersPageState extends State<FiltersPage> {
       // show alert dialog with location error
       if (Platform.isAndroid){
         showDialog(
-          barrierDismissible: true,
+            barrierDismissible: true,
             context: context,
             builder: (BuildContext context){
               return AlertDialog(
@@ -206,12 +206,12 @@ class _FiltersPageState extends State<FiltersPage> {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => OrganizerPage(
-                initialPosition: userPosition == null ? null : userPosition,
-                destinyPosition: destinyPosition,
-                filters: filters,
-                suggestedStops: suggestedStops,
-              )
+                builder: (context) => OrganizerPage(
+                  initialPosition: userPosition == null ? null : userPosition,
+                  destinyPosition: destinyPosition,
+                  filters: filters,
+                  suggestedStops: suggestedStops,
+                )
             )
         );
 
@@ -351,7 +351,6 @@ class _FiltersPageState extends State<FiltersPage> {
       /*textChanged: (text) async{
                         //FocusScope.of(context).requestFocus(focusNode);
                         if(text.length % 4 == 0){
-
                             suggestionsName = new List<String>();
                             List<Suggestion> placesSuggestions = await suggestionsManager.getSuggestion(text);
                             if(placesSuggestions != null){
@@ -360,305 +359,299 @@ class _FiltersPageState extends State<FiltersPage> {
                               }
                             }
                             if (!this.mounted) return;
-
                             //textEditingController.text = text;
                         }
                       },
                       textSubmitted: (text){
                         //setState(() {
                           //textEditingController.text = text;
-
                         //});
                         searchLocation();
                       },*/
     );
 
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      appBar: RouteMeAppBar(),
-      body: Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: 16,
-              horizontal: 16
-          ),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: <Widget>[
-                Container(
-                    decoration: BoxDecoration(
-                      color: Colors.red[300],
-                      borderRadius: BorderRadius.all(Radius.circular(32)),
-                    ),
-                    child: autoCompleteTextField
-                ),
-                Visibility(
-                  replacement: const SizedBox(height: 0, width: 0,),
-                  visible: suggestedStops == null ? false : suggestedStops.length > 0,
-                  child: Container(
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Flexible(
-                              flex: 4,
-                              child: Divider(
-                                thickness: .5,
-                                color: Colors.red,
-                              ),
+    return Padding(
+        padding: EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: 16
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            children: <Widget>[
+              Container(
+                  decoration: BoxDecoration(
+                    color: Colors.red[300],
+                    borderRadius: BorderRadius.all(Radius.circular(32)),
+                  ),
+                  child: autoCompleteTextField
+              ),
+              Visibility(
+                replacement: const SizedBox(height: 0, width: 0,),
+                visible: suggestedStops == null ? false : suggestedStops.length > 0,
+                child: Container(
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Flexible(
+                            flex: 4,
+                            child: Divider(
+                              thickness: .5,
+                              color: Colors.red,
                             ),
-                            SizedBox(
-                              width: 4,
-                            ),
-                            Flexible(
-                              flex: 5,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Suggested places",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 14
-                                  ),
-                                  textAlign: TextAlign.end,
+                          ),
+                          SizedBox(
+                            width: 4,
+                          ),
+                          Flexible(
+                            flex: 5,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Suggested places",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14
                                 ),
+                                textAlign: TextAlign.end,
                               ),
                             ),
-                            SizedBox(
-                              width: 4,
+                          ),
+                          SizedBox(
+                            width: 4,
+                          ),
+                          Flexible(
+                            flex: 4,
+                            child: Divider(
+                              thickness: .5,
+                              color: Colors.red,
                             ),
-                            Flexible(
-                              flex: 4,
-                              child: Divider(
-                                thickness: .5,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 3,
-                        ),
-                        Container(
-                          height: 70,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: suggestedStops == null ? 0 : suggestedStops.length,
-                            itemBuilder: (BuildContext context, int index){
-                              Color backColor;
-                              Color detailColor;
-                              TextStyle namestyle;
-                              if(suggestedStops.elementAt(index).toVisit){
-                                backColor = Colors.red[200];
-                                detailColor = Colors.white70;
-                                namestyle = TextStyle(
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 3,
+                      ),
+                      Container(
+                        height: 70,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: suggestedStops == null ? 0 : suggestedStops.length,
+                          itemBuilder: (BuildContext context, int index){
+                            Color backColor;
+                            Color detailColor;
+                            TextStyle namestyle;
+                            if(suggestedStops.elementAt(index).toVisit){
+                              backColor = Colors.red[200];
+                              detailColor = Colors.white70;
+                              namestyle = TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white70
-                                );
-                              }else{
-                                backColor = Colors.grey[400];
-                                detailColor = Colors.white70;
-                                namestyle = TextStyle(
+                              );
+                            }else{
+                              backColor = Colors.grey[400];
+                              detailColor = Colors.white70;
+                              namestyle = TextStyle(
                                   fontWeight: FontWeight.normal,
                                   color: Colors.white70
-                                );
-                              }
-                              return GestureDetector(
-                                  child: Row(
-                                    children: <Widget>[
-                                      Card(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: new BorderRadius.circular(10.0),
-                                            side: BorderSide(color: Colors.red[200], width: 1)
+                              );
+                            }
+                            return GestureDetector(
+                                child: Row(
+                                  children: <Widget>[
+                                    Card(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: new BorderRadius.circular(10.0),
+                                          side: BorderSide(color: Colors.red[200], width: 1)
+                                      ),
+                                      color: backColor,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: backColor,
+                                          borderRadius: BorderRadius.all(Radius.circular(32)),
                                         ),
-                                        color: backColor,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: backColor,
-                                            borderRadius: BorderRadius.all(Radius.circular(32)),
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 4,
+                                              horizontal: 8
                                           ),
-                                          child: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 4,
-                                                horizontal: 8
-                                            ),
-                                            child: Row(
-                                              children: <Widget>[
-                                                ClipOval(
-                                                  child: FadeInImage.assetNetwork(
-                                                    image: placesManager.PLACE_PHOTO_BASE_URL
-                                                            + placesManager.PLACE_PHOTO_MAXH
-                                                            + "2000"
-                                                            + placesManager.PLACE_PHOTO_MAXW
-                                                            + "2000"
-                                                            + placesManager.PLACE_PHOTO_REFERENCE
-                                                            + suggestedStops.elementAt(index).photo
-                                                            + placesManager.API_KEY
-                                                    ,
-                                                    placeholder: 'assets/markers/marcador.png',
-                                                  ),
+                                          child: Row(
+                                            children: <Widget>[
+                                              ClipOval(
+                                                child: FadeInImage.assetNetwork(
+                                                  image: placesManager.PLACE_PHOTO_BASE_URL
+                                                      + placesManager.PLACE_PHOTO_MAXH
+                                                      + "2000"
+                                                      + placesManager.PLACE_PHOTO_MAXW
+                                                      + "2000"
+                                                      + placesManager.PLACE_PHOTO_REFERENCE
+                                                      + suggestedStops.elementAt(index).photo
+                                                      + placesManager.API_KEY
+                                                  ,
+                                                  placeholder: 'assets/markers/marcador.png',
                                                 ),
-                                                SizedBox(
-                                                  width: 6,
-                                                ),
-                                                Text(
-                                                  suggestedStops.elementAt(index).name,
-                                                  style: namestyle,
-                                                ),
-                                              ],
-                                            ),
+                                              ),
+                                              SizedBox(
+                                                width: 6,
+                                              ),
+                                              Text(
+                                                suggestedStops.elementAt(index).name,
+                                                style: namestyle,
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
-                                        width: 10,
-                                      )
-                                    ],
-                                  ),
-                                  onTap: (){
-                                    checkSuggestedStop(suggestedStops.elementAt(index));
-                                    setState(() {});
-                                  }
-                              );
-                            },
-                          ),
-                        )
-                      ],
-                    ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    )
+                                  ],
+                                ),
+                                onTap: (){
+                                  checkSuggestedStop(suggestedStops.elementAt(index));
+                                  setState(() {});
+                                }
+                            );
+                          },
+                        ),
+                      )
+                    ],
                   ),
                 ),
-                SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 3,
-                      child: Divider(
-                        thickness: .5,
-                        color: Colors.red,
-                      ),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Row(
+                children: <Widget>[
+                  Flexible(
+                    flex: 3,
+                    child: Divider(
+                      thickness: .5,
+                      color: Colors.red,
                     ),
-                    Flexible(
-                      flex: 3,
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Filter by type",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 14
-                          ),
-                          textAlign: TextAlign.end,
+                  ),
+                  Flexible(
+                    flex: 3,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Filter by type",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14
                         ),
+                        textAlign: TextAlign.end,
                       ),
                     ),
-                    Flexible(
-                      flex: 3,
-                      child: Divider(
-                        thickness: .5,
-                        color: Colors.red,
-                      ),
+                  ),
+                  Flexible(
+                    flex: 3,
+                    child: Divider(
+                      thickness: .5,
+                      color: Colors.red,
                     ),
-                  ],
-                ),
-                SizedBox(
-                  height: 3,
-                ),
-                Container(
-                  height: 40,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: filters.length,
-                    itemBuilder: (BuildContext context, int index){
-                      return Row(
-                        children: <Widget>[
-                          SizedBox(width: 8),
-                          FilterChip(
-                            label: Text(
-                              filters.elementAt(index).name,
-                              style: TextStyle(
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 3,
+              ),
+              Container(
+                height: 40,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: filters.length,
+                  itemBuilder: (BuildContext context, int index){
+                    return Row(
+                      children: <Widget>[
+                        SizedBox(width: 8),
+                        FilterChip(
+                          label: Text(
+                            filters.elementAt(index).name,
+                            style: TextStyle(
                                 color: filters.elementAt(index).selected ? Colors.white70 : Colors.grey[600],
                                 fontWeight: filters.elementAt(index).selected ? FontWeight.bold : FontWeight.normal
-                              ),
                             ),
-                            avatar: CircleAvatar(
-                              backgroundColor: filters.elementAt(index).selected ? Colors.red[100] : Colors.grey,
-                              child: Icon(
-                                filters.elementAt(index).selected ? Icons.check_circle : Icons.check_circle_outline,
-                                color: filters.elementAt(index).selected ? Colors.red[300] : Colors.grey[600],
-                              ),
-                            ),
-                            backgroundColor: filters.elementAt(index).selected ? Colors.red[200] : Colors.grey,
-                            onSelected: (bool value){
-                              filters.elementAt(index).selected = !filters.elementAt(index).selected;
-                              setState(() {});
-                            },
-                          )
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-                  width: 200,
-                  height: 50,
-                  child: RaisedButton(
-                    color: Colors.red[400],
-                    onPressed: (){
-                      routeMe();
-                    },
-                    shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(18.0),
-                        side: BorderSide(color: Colors.red[400], width: 4)
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Image.asset(
-                          'assets/images/solo_logo_v1.png',
-                          width: 23,
-                          height: 23,
-                          color: Colors.white,
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "Route me!",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 23
                           ),
+                          avatar: CircleAvatar(
+                            backgroundColor: filters.elementAt(index).selected ? Colors.red[100] : Colors.grey,
+                            child: Icon(
+                              filters.elementAt(index).selected ? Icons.check_circle : Icons.check_circle_outline,
+                              color: filters.elementAt(index).selected ? Colors.red[300] : Colors.grey[600],
+                            ),
+                          ),
+                          backgroundColor: filters.elementAt(index).selected ? Colors.red[200] : Colors.grey,
+                          onSelected: (bool value){
+                            filters.elementAt(index).selected = !filters.elementAt(index).selected;
+                            setState(() {});
+                          },
                         )
                       ],
-                    ),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                width: 200,
+                height: 50,
+                child: RaisedButton(
+                  color: Colors.red[400],
+                  onPressed: (){
+                    routeMe();
+                  },
+                  shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(18.0),
+                      side: BorderSide(color: Colors.red[400], width: 4)
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Image.asset(
+                        'assets/images/solo_logo_v1.png',
+                        width: 23,
+                        height: 23,
+                        color: Colors.white,
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        "Route me!",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 23
+                        ),
+                      )
+                    ],
                   ),
                 ),
-                SizedBox(
-                  height: 15,
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Container(
+                height: 250,
+                child: GoogleMap(
+                  onMapCreated: (GoogleMapController controller){
+                    googleMapcontroller = controller;
+                    getUserLocation();
+                  },
+                  initialCameraPosition: _cameraPosition,
+                  myLocationEnabled: true,
                 ),
-                Container(
-                  height: 250,
-                  child: GoogleMap(
-                    onMapCreated: (GoogleMapController controller){
-                      googleMapcontroller = controller;
-                      getUserLocation();
-                    },
-                    initialCameraPosition: _cameraPosition,
-                    myLocationEnabled: true,
-                  ),
-                ),
-              ],
-            ),
-          )
-      ),
+              ),
+            ],
+          ),
+        )
     );
   }
 
