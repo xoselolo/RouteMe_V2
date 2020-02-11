@@ -152,7 +152,7 @@ class _NavigationPageState extends State<NavigationPage> {
           print("Number of stops" + stops.length.toString());
 
           var geolocator = Geolocator();
-          var locationOptions = LocationOptions(accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 40);
+          var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 40);
 
           setState(() {
 

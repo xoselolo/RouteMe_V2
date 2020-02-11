@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_route_me/pages/page_welcome.dart';
 import 'pages/page_filters.dart';
 
 void main() => runApp(MyApp());
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: FiltersPage(),
+      home: WelcomePage(),
     );
   }
 }

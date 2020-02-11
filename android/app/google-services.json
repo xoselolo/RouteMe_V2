@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "334962819400",
+    "firebase_url": "https://routeme-ba97f.firebaseio.com",
+    "project_id": "routeme-ba97f",
+    "storage_bucket": "routeme-ba97f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:334962819400:android:b3b81995627c3a4c86737d",
+        "android_client_info": {
+          "package_name": "com.loleksiyo.route_me"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "334962819400-ar63nnk94v83i76n8tro6et2jnao33no.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC--JwvD_01Bs7UQDApVsbUU6peKqPUD4k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "334962819400-ar63nnk94v83i76n8tro6et2jnao33no.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
