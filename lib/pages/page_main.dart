@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_route_me/pages/page_filters.dart';
+import 'package:flutter_route_me/pages/page_routes.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
 
 class MainPage extends StatefulWidget {
@@ -58,7 +60,8 @@ class _MainPageState extends State<MainPage> {
         pageSnapping: true,
         onPageChanged: _onPageChanged,
         children: <Widget>[
-          Container(color: Colors.green,),
+          //RoutesPage(),
+          RoutesPage(),
           FiltersPage(),
           Container(color: Colors.pink,)
         ],
