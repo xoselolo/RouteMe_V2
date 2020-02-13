@@ -77,7 +77,6 @@ class _MainPageState extends State<MainPage> {
 
 
   void _onBottomItemTap(int value) {
-    // TODO
     currentIndex = value;
     _pageController.jumpToPage(currentIndex);
 
@@ -89,7 +88,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _onPageChanged(int value) {
-    // TODO
     currentIndex = value;
 
     setState(() {

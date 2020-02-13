@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'page_cityroutes.dart';
+
 class CitiesPage extends StatefulWidget {
   CitiesPage({Key key}) : super(key: key);
 
@@ -45,7 +47,7 @@ class _CitiesPageState extends State<CitiesPage> {
             itemBuilder: (_, index){
               return GestureDetector(
                 onTap: (){
-                  print("ToDo: Show CityRoutesPage");
+                  gotoCityRoutes(citiesSnapshot.data[index].documentID);
                 },
                 child: Container(
                   child: Center(
@@ -150,6 +152,14 @@ class _CitiesPageState extends State<CitiesPage> {
     final ref = FirebaseStorage.instance.ref().child('cities/' + cityId + "/picture_" + random.toString() + ".jpg");
     String url = await ref.getDownloadURL();
     return url;
+  }
+
+  void gotoCityRoutes(String documentID) {
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => CityRoutesPage(
+          cityId: documentID,
+        )
+    ));
   }
 
 }
