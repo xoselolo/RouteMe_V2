@@ -28,7 +28,6 @@ class _CitiesPageState extends State<CitiesPage> {
     super.initState();
 
     firestore = Firestore.instance;
-    random = Random.secure().nextInt(1000) % 3 + 1;
   }
 
   @override
@@ -97,51 +96,24 @@ class _CitiesPageState extends State<CitiesPage> {
         }
       },
     );
-
-    /*
-    return StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('companies_routes').snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError)
-            return new Text('Error: ${snapshot.error}');
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return new Text('Loading...');
-            default:
-              return new ListView(
-                children: snapshot.data.documents.map((DocumentSnapshot document) {
-                  String companyName = "Company name";
-                  Firestore.instance
-                      .collection('trip_companies')
-                      .document(document['company'])
-                      .get()
-                      .then((DocumentSnapshot ds) {
-                        print(ds.data['name']);
-                    companyName = ds['name'];
-                    // use ds as a snapshot
-                  });
-                  return new ListTile(
-                    title: new Text(companyName),
-                    subtitle: new Text(document['distance'].toString()),
-                  );
-                }).toList(),
-              );
-          }
-        }
-    );
-     */
   }
 
+
+  /*
 
   Future getRoutes() async {
     QuerySnapshot snapshot = await firestore.collection('companies_routes').getDocuments();
     return snapshot.documents;
   }
-
   Future getCompanyName(String companyId) async {
     DocumentSnapshot snapshot = await firestore.collection('trip_companies').document(companyId).get();
     return snapshot;
   }
+
+   */
+
+
+
 
   Future getCities() async {
     QuerySnapshot snapshot = await firestore.collection('cities').getDocuments();
@@ -149,6 +121,7 @@ class _CitiesPageState extends State<CitiesPage> {
   }
 
   Future getCityImage(String cityId) async {
+    random = Random.secure().nextInt(1000) % 3 + 1;
     final ref = FirebaseStorage.instance.ref().child('cities/' + cityId + "/picture_" + random.toString() + ".jpg");
     String url = await ref.getDownloadURL();
     return url;
