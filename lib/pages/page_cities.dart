@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CitiesPage extends StatefulWidget {
   CitiesPage({Key key}) : super(key: key);
@@ -46,39 +47,48 @@ class _CitiesPageState extends State<CitiesPage> {
                 onTap: (){
                   print("ToDo: Show CityRoutesPage");
                 },
-                child: Card(
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Stack(
-                    children: <Widget>[
-                      FutureBuilder(
-                        future: getCityImage(citiesSnapshot.data[index].documentID),
-                        builder: (_, cityImageSnapshot){
-                          if(cityImageSnapshot.connectionState == ConnectionState.waiting || cityImageSnapshot.data == null){
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(30),
-                              child: Image.asset('assets/images/cities/default.jpg'),
-                            );
-                          }else{
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.network(cityImageSnapshot.data),
-                            );
-                          }
-                        },
+                child: Container(
+                  child: Center(
+                    child: Card(
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          Text(citiesSnapshot.data[index].data['name']),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                      child: Center(
+                        child: Stack(
+                          children: <Widget>[
+                            FutureBuilder(
+                              future: getCityImage(citiesSnapshot.data[index].documentID),
+                              builder: (_, cityImageSnapshot){
+                                if(cityImageSnapshot.connectionState == ConnectionState.waiting || cityImageSnapshot.hasError || cityImageSnapshot.data == null){
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Image.asset('assets/images/cities/default.jpg'),
+                                  );
+                                }else{
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Image.network(cityImageSnapshot.data),
+                                  );
+                                }
+                              },
+                            ),
+                            Positioned.fill(
+                              child: Text(
+                                citiesSnapshot.data[index].data['name'],
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 30,
+                                  letterSpacing: 4,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ),
+                  )
+                )
               );
             }
           );

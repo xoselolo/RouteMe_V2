@@ -314,7 +314,9 @@ class _NavigationPageState extends State<NavigationPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: RouteMeAppBar(),
+      appBar: RouteMeAppBar(
+        pageIndex: -1
+      ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.red[100],
         shape: CircularNotchedRectangle(),

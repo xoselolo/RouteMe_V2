@@ -16,7 +16,9 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: RouteMeAppBar(),
+      appBar: RouteMeAppBar(
+        pageIndex: -1
+      ),
       body: Form(
         key: _formKey,
         child: Column(

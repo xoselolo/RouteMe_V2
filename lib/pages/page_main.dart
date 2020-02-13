@@ -13,18 +13,24 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
 
-  int _currentIndex;
+  int currentIndex;
   PageController _pageController;
+
+  RouteMeAppBar appbar;
 
 
   @override
   void initState() {
 
-    _currentIndex = 0;
+    currentIndex = 0;
 
     _pageController = new PageController(
-      initialPage: _currentIndex,
+      initialPage: currentIndex,
       keepPage: true
+    );
+
+    appbar = new RouteMeAppBar(
+      pageIndex: currentIndex,
     );
   }
 
@@ -32,7 +38,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: RouteMeAppBar(),
+      appBar: appbar,
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -48,7 +54,7 @@ class _MainPageState extends State<MainPage> {
               title: Text('Profile')
           ),
         ],
-        currentIndex: _currentIndex,
+        currentIndex: currentIndex,
         selectedItemColor: Colors.red[700],
         onTap: _onBottomItemTap,
       ),
@@ -72,16 +78,24 @@ class _MainPageState extends State<MainPage> {
 
   void _onBottomItemTap(int value) {
     // TODO
+    currentIndex = value;
+    _pageController.jumpToPage(currentIndex);
+
     setState(() {
-      _currentIndex = value;
-      _pageController.jumpToPage(_currentIndex);
+      appbar = RouteMeAppBar(
+        pageIndex: currentIndex,
+      );
     });
   }
 
   void _onPageChanged(int value) {
     // TODO
+    currentIndex = value;
+
     setState(() {
-      _currentIndex = value;
+      appbar = RouteMeAppBar(
+        pageIndex: currentIndex,
+      );
     });
   }
 }

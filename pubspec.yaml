@@ -46,6 +46,10 @@ dependencies:
 
 
 
+  google_fonts: ^0.3.8
+
+
+
   firebase_auth: ^0.15.4
   cloud_firestore: ^0.13.1+1
   firebase_storage: ^3.1.1
@@ -72,6 +76,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/cities/
     - assets/markers/
 
   # To add assets to your application, add an assets section, like this:
