@@ -124,6 +124,7 @@ class _CitiesPageState extends State<CitiesPage> {
     random = Random.secure().nextInt(1000) % 3 + 1;
     final ref = FirebaseStorage.instance.ref().child('cities/' + cityId + "/picture_" + random.toString() + ".jpg");
     String url = await ref.getDownloadURL();
+    print(url);
     return url;
   }
 

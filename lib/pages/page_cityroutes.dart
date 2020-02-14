@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math';
 import 'dart:ui';
 
@@ -102,7 +103,9 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
                               }
                             },
                           ),
-                        )
+                        ),
+                        SizedBox(height: 4),
+
                       ],
                     ),
                     children: <Widget>[
@@ -115,22 +118,67 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(
-                              cityRoutesSnapshot.data[index].data['description'],
-                              style: GoogleFonts.lato(),
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                cityRoutesSnapshot.data[index].data['description'],
+                                style: GoogleFonts.lato(),
+                              ),
                             ),
+
+                            SizedBox(
+                              height: 10,
+                            ),
+
                             FutureBuilder(
                               future: getRoutePhotos(cityRoutesSnapshot.data[index].documentID),
                               builder: (_, routePhotosSnapshot){
                                 if(routePhotosSnapshot.connectionState == ConnectionState.waiting){
-                                  return Container(height: 100, color: Colors.red);
+                                  return CircularProgressIndicator();
                                 }else{
-                                  print(routePhotosSnapshot.toString());
-                                  print(routePhotosSnapshot.data);
-                                  return Container(height: 100, color: Colors.green);
+                                  List items = routePhotosSnapshot.data;
+                                  if(items.length == 0){
+                                    return SizedBox(height: 10);
+                                  }else{
+                                    return Container(
+                                      height: 100,
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.horizontal,
+                                        //itemCount: routePhotosSnapshot.data.length,
+                                        itemCount: items.length,
+                                        itemBuilder: (_, index){
+                                          //print(routePhotosSnapshot.data);
+                                          //print(urls.elementAt(index));
+                                          return Row(
+                                            children: <Widget>[
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              ClipRRect(
+                                                borderRadius: BorderRadius.circular(12),
+                                                child: Image.network(
+                                                    items.elementAt(index)
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              )
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  }
                                 }
                               },
-                            )
+                            ),
+
+                            SizedBox(
+                              height: 10,
+                            ),
+
+
                           ],
                         )
                       ),
@@ -139,17 +187,6 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
                   );
                 }
             );
-            /*
-            Container(
-              height: 150,
-              color: Color.fromARGB(rndm, rndm, rndm, rndm),
-            );
-
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.network(cityImageSnapshot.data),
-            );
-             */
           }
         },
       ),
@@ -168,12 +205,31 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
   }
 
   Future getRoutePhotos(String routeId) async {
-    var storageRef = FirebaseStorage.instance.getReferenceFromUrl("routes/" + routeId + "/");
-    // todo: get all images urls
+    //HashMap<String, dynamic> map = new HashMap<String, dynamic>();
 
-    //StorageReference ref = FirebaseStorage.instance.ref().child('routes/' + routeId + "/").getStorage().ref();
-    //String url = await ref.getDownloadURL();
-    //return ref;
+    //List keys = new List();
+    List values = new List();
+    List<String> urls = new List<String>();
+
+    FirebaseStorage.instance.ref().child("routes/" + routeId).listAll().then((result) {
+      LinkedHashMap itemsMap = result['items'];
+
+      itemsMap.forEach((key, value) async {
+        //keys.add(key);
+        values.add(value);
+
+        final ref = FirebaseStorage.instance.ref().child(value['path']);
+        String url = await ref.getDownloadURL();
+        urls.add(url);
+        //print(value);
+      });
+
+    });
+
+    //map.putIfAbsent("keys", () => keys);
+    //map.putIfAbsent("values", () => values);
+
+    return urls;
   }
 
   Future getFileUrl(data) async {
