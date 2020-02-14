@@ -46,7 +46,7 @@ class _CitiesPageState extends State<CitiesPage> {
             itemBuilder: (_, index){
               return GestureDetector(
                 onTap: (){
-                  gotoCityRoutes(citiesSnapshot.data[index].documentID);
+                  gotoCityRoutes(citiesSnapshot.data[index].documentID, citiesSnapshot.data[index].data['name']);
                 },
                 child: Container(
                   child: Center(
@@ -128,10 +128,11 @@ class _CitiesPageState extends State<CitiesPage> {
     return url;
   }
 
-  void gotoCityRoutes(String documentID) {
+  void gotoCityRoutes(String documentID, String cityName) {
     Navigator.push(context, MaterialPageRoute(
         builder: (context) => CityRoutesPage(
           cityId: documentID,
+          cityName: cityName,
         )
     ));
   }

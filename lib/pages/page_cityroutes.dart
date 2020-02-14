@@ -12,20 +12,23 @@ class CityRoutesPage extends StatefulWidget {
 
   @required
   final String cityId;
+  @required
+  final String cityName;
 
-  const CityRoutesPage({Key key, this.cityId}) : super(key: key);
+  const CityRoutesPage({Key key, this.cityId, this.cityName}) : super(key: key);
 
   @override
-  _CityRoutesPageState createState() => _CityRoutesPageState(this.cityId);
+  _CityRoutesPageState createState() => _CityRoutesPageState(this.cityId, this.cityName);
 }
 
 
 class _CityRoutesPageState extends State<CityRoutesPage> {
 
   final String cityId;
+  final String cityName;
   var firestore;
 
-  _CityRoutesPageState(this.cityId);
+  _CityRoutesPageState(this.cityId, this.cityName);
 
 
   @override
@@ -37,8 +40,22 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: RouteMeAppBar(
-          pageIndex: -1
+      appBar: AppBar(
+        title: Text(
+          cityName,
+          style: GoogleFonts.poppins(
+              letterSpacing: 2
+          ),
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: new Icon(Icons.help),
+            onPressed: (){
+              print("Todo: show help");
+            },
+          ),
+        ],
+        backgroundColor: Colors.red[400],
       ),
       body: FutureBuilder(
         future: getCityRoutes(cityId),
@@ -57,8 +74,9 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
             return ListView.builder(
                 itemCount: cityRoutesSnapshot.data.length,
                 itemBuilder: (_, index){
-                  int rndm = Random.secure().nextInt(255);
-                  int maxLines = 2;
+                  bool isFree = cityRoutesSnapshot.data[index].data['offer_id'] == "FREE";
+                  bool hasDiscount = cityRoutesSnapshot.data[index].data['offer_id'] != "BASE";
+
                   return ExpansionTile(
                     title: Text(
                         cityRoutesSnapshot.data[index].data['title'],
@@ -178,12 +196,23 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
                               height: 10,
                             ),
 
-
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: RaisedButton(
+                                onPressed: (){
+                                  print("Todo: Get or buy the rute");
+                                },
+                                child: isFree ?
+                                  Text("free") :
+                                  hasDiscount ?
+                                  Text("discounted") :
+                                  Text("base"),
+                              ),
+                            ),
                           ],
                         )
                       ),
                     ],
-
                   );
                 }
             );
