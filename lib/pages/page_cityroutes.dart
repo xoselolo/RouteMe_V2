@@ -84,7 +84,7 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
                     subtitle: cityRoutesSnapshot.data[index].data['offer_id'] == "FREE" ?
                       Text(
                         "FREE",
-                        style: GoogleFonts.modak(
+                        style: GoogleFonts.poppins(
                             color: Colors.green,
                             fontSize: 15,
                             fontWeight: FontWeight.bold
@@ -93,9 +93,9 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
                       !hasDiscount ?
                       Text(
                         price.toStringAsFixed(2) + "€",
-                        style: GoogleFonts.modak(
+                        style: GoogleFonts.poppins(
                             fontSize: 15,
-                            fontWeight: FontWeight.bold
+                            //fontWeight: FontWeight.bold
                         ),
                       ) : FutureBuilder(
                         future: calculateRoutePrice(cityRoutesSnapshot.data[index]),
@@ -115,16 +115,16 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
                               children: <Widget>[
                                 Text(
                                   discountedPrice.toStringAsFixed(2) + "€",
-                                  style: GoogleFonts.modak(
-                                      color: Colors.pink[700],
+                                  style: GoogleFonts.poppins(
+                                      color: Colors.red[700],
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold
                                   ),
                                 ),
                                 SizedBox(width: 4),
                                 Text(
-                                  discountedPrice.toStringAsFixed(2) + "€",
-                                  style: GoogleFonts.modak(
+                                  price.toStringAsFixed(2) + "€",
+                                  style: GoogleFonts.poppins(
                                       fontSize: 12,
                                       decoration: TextDecoration.lineThrough,
                                       color: Colors.grey
@@ -132,13 +132,16 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
                                 ),
                                 SizedBox(width: 4),
                                 Container(
-                                  color: Colors.pink[700],
+                                  decoration: BoxDecoration(
+                                    color: Colors.red[700],
+                                    borderRadius: BorderRadius.circular(4)
+                                  ),
                                   child: Text(
-                                    "- " + discount.toStringAsFixed(0) + "%",
-                                    style: GoogleFonts.modak(
+                                    "  - " + discount.toStringAsFixed(0) + "% ",
+                                    style: GoogleFonts.poppins(
                                         color: Colors.white,
                                         fontSize: 15,
-                                        fontWeight: FontWeight.bold
+                                        //fontWeight: FontWeight.bold
                                     ),
                                   ),
                                 )
@@ -147,55 +150,6 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
                           }
                         }
                       ),
-
-
-                        /*
-                        FREE
-                        9.99
-                        7.99 -9.99- 20%
-                         */
-
-                        /*
-                        Chip(
-                          label: cityRoutesSnapshot.data[index].data['offer_id'] == "FREE" ?
-                          Text(
-                            "FREE",
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold
-                            ),
-                          ) : cityRoutesSnapshot.data[index].data['offer_id'] == "BASE" ?
-                          Text(
-                            (cityRoutesSnapshot.data[index].data['price'] + .0).toStringAsFixed(2) + " €",
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold
-                            ),
-                          ) : FutureBuilder(
-                            future: calculateRoutePrice(cityRoutesSnapshot.data[index]),
-                            builder: (_, offerSnapshot){
-                              if(offerSnapshot.connectionState == ConnectionState.waiting || offerSnapshot.hasError){
-                                return Text(
-                                  "...",
-                                  style: TextStyle(
-                                      fontSize: 10
-                                  ),
-                                );
-                              }else{
-                                discountedPrice = cityRoutesSnapshot.data[index].data['price'] - (cityRoutesSnapshot.data[index].data['price'] * offerSnapshot.data['discount_percentage'] / 100) + .0;
-                                return Text(
-                                  discountedPrice.toStringAsFixed(2) + " €",
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                         */
-
 
                     trailing: FutureBuilder(
                       future: getRouteRatings(cityRoutesSnapshot.data[index].documentID),
@@ -337,21 +291,27 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
                               alignment: Alignment.bottomCenter,
                               child: isFree ?
                               RaisedButton(
-                                      elevation: 10,
-                                      color: Colors.white,
-                                      onPressed: (){
-                                        print("Todo: Get or buy the rute");
-                                      },
-                                      child: Text("Free")
-                                  ) :
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                ),
+                                elevation: 3,
+                                color: Colors.white,
+                                onPressed: (){
+                                  print("Todo: Get or buy the rute");
+                                },
+                                child: Text("Free")
+                              ) :
                               RaisedButton(
-                                  elevation: 10,
-                                  color: Colors.white,
-                                  onPressed: (){
-                                    print("Todo: Get or buy the rute");
-                                  },
-                                  child: Text("Buy")
-                              )
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18.0),
+                                ),
+                                elevation: 3,
+                                color: Colors.white,
+                                onPressed: (){
+                                  print("Todo: Get or buy the rute");
+                                },
+                                child: Text("Buy")
+                              ),
                             ),
                           ],
                         )
