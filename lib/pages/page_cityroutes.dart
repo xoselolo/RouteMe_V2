@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -62,20 +63,16 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
         builder: (_, cityRoutesSnapshot){
           if(cityRoutesSnapshot.connectionState == ConnectionState.waiting){
             return CircularProgressIndicator();
-            /*
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset('assets/images/cities/default.jpg'),
-            );
-             */
           }else{
 
-            //print(cityRoutesSnapshot.data.toString());
             return ListView.builder(
                 itemCount: cityRoutesSnapshot.data.length,
                 itemBuilder: (_, index){
                   bool isFree = cityRoutesSnapshot.data[index].data['offer_id'] == "FREE";
                   bool hasDiscount = cityRoutesSnapshot.data[index].data['offer_id'] != "BASE";
+                  double price = cityRoutesSnapshot.data[index].data['offer_id'] == "FREE" ? 0.0 : cityRoutesSnapshot.data[index].data['price'] + .0;
+                  double discountedPrice;
+                  double discount;
 
                   return ExpansionTile(
                     title: Text(
@@ -84,21 +81,95 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
                         fontWeight: FontWeight.bold
                       ),
                     ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
+                    subtitle: cityRoutesSnapshot.data[index].data['offer_id'] == "FREE" ?
+                      Text(
+                        "FREE",
+                        style: GoogleFonts.modak(
+                            color: Colors.green,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold
+                        ),
+                      ) :
+                      !hasDiscount ?
+                      Text(
+                        price.toStringAsFixed(2) + "€",
+                        style: GoogleFonts.modak(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold
+                        ),
+                      ) : FutureBuilder(
+                        future: calculateRoutePrice(cityRoutesSnapshot.data[index]),
+                        builder: (_, offerSnapshot){
+                          if(offerSnapshot.connectionState == ConnectionState.waiting || offerSnapshot.hasError){
+                            return Text(
+                              "...",
+                              style: TextStyle(
+                                fontSize: 10
+                              ),
+                            );
+                          }else{
+                            discount = offerSnapshot.data['discount_percentage'] + .0;
+                            discountedPrice = cityRoutesSnapshot.data[index].data['price'] - (cityRoutesSnapshot.data[index].data['price'] * offerSnapshot.data['discount_percentage'] / 100) + .0;
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  discountedPrice.toStringAsFixed(2) + "€",
+                                  style: GoogleFonts.modak(
+                                      color: Colors.pink[700],
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  discountedPrice.toStringAsFixed(2) + "€",
+                                  style: GoogleFonts.modak(
+                                      fontSize: 12,
+                                      decoration: TextDecoration.lineThrough,
+                                      color: Colors.grey
+                                  ),
+                                ),
+                                SizedBox(width: 4),
+                                Container(
+                                  color: Colors.pink[700],
+                                  child: Text(
+                                    "- " + discount.toStringAsFixed(0) + "%",
+                                    style: GoogleFonts.modak(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                )
+                              ],
+                            );
+                          }
+                        }
+                      ),
+
+
+                        /*
+                        FREE
+                        9.99
+                        7.99 -9.99- 20%
+                         */
+
+                        /*
                         Chip(
                           label: cityRoutesSnapshot.data[index].data['offer_id'] == "FREE" ?
                           Text(
                             "FREE",
                             style: TextStyle(
-                              fontSize: 10
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold
                             ),
                           ) : cityRoutesSnapshot.data[index].data['offer_id'] == "BASE" ?
                           Text(
-                            cityRoutesSnapshot.data[index].data['price'].toString() + " €",
+                            (cityRoutesSnapshot.data[index].data['price'] + .0).toStringAsFixed(2) + " €",
                             style: TextStyle(
-                                fontSize: 10
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold
                             ),
                           ) : FutureBuilder(
                             future: calculateRoutePrice(cityRoutesSnapshot.data[index]),
@@ -111,20 +182,86 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
                                   ),
                                 );
                               }else{
-                                double totalPrice = cityRoutesSnapshot.data[index].data['price'] - (cityRoutesSnapshot.data[index].data['price'] * offerSnapshot.data['discount_percentage'] / 100);
+                                discountedPrice = cityRoutesSnapshot.data[index].data['price'] - (cityRoutesSnapshot.data[index].data['price'] * offerSnapshot.data['discount_percentage'] / 100) + .0;
                                 return Text(
-                                  totalPrice.toString() + " €",
+                                  discountedPrice.toStringAsFixed(2) + " €",
                                   style: TextStyle(
-                                      fontSize: 10
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold
                                   ),
                                 );
                               }
                             },
                           ),
                         ),
-                        SizedBox(height: 4),
+                         */
 
-                      ],
+
+                    trailing: FutureBuilder(
+                      future: getRouteRatings(cityRoutesSnapshot.data[index].documentID),
+                      builder: (_, ratingSnapshot){
+                        if(ratingSnapshot.connectionState == ConnectionState.waiting){
+                          return Container(
+                            height: 10,
+                            width: 10,
+                          );
+                        }else{
+                          dynamic rating = 0;
+                          dynamic numRatings = ratingSnapshot.data['num_ratings'];
+
+                          if(numRatings == 0){
+                            rating = ratingSnapshot.data['base_rating'];
+                          }else{
+                            for(int i = 0; i < numRatings; i++){
+                              rating += ratingSnapshot.data['user_ratings'][i]['rating'];
+                            }
+                            rating = rating / numRatings;
+                          }
+
+                          rating = rating +.0;
+
+                          return Column(
+                              children: <Widget>[
+                                Text(
+                                  rating.toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                RatingBar(
+                                  onRatingUpdate: (newRating){
+                                    print(newRating.toString());
+                                  },
+                                  initialRating: rating,
+                                  minRating: 1,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: true,
+                                  itemCount: 5,
+                                  //itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                  itemSize: 14,
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                Text(
+                                  numRatings.toString(),
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 9
+                                  ),
+                                )
+                              ]
+                          );
+                        }
+                      },
                     ),
                     children: <Widget>[
                       Padding(
@@ -198,16 +335,23 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
 
                             Align(
                               alignment: Alignment.bottomCenter,
-                              child: RaisedButton(
-                                onPressed: (){
-                                  print("Todo: Get or buy the rute");
-                                },
-                                child: isFree ?
-                                  Text("free") :
-                                  hasDiscount ?
-                                  Text("discounted") :
-                                  Text("base"),
-                              ),
+                              child: isFree ?
+                              RaisedButton(
+                                      elevation: 10,
+                                      color: Colors.white,
+                                      onPressed: (){
+                                        print("Todo: Get or buy the rute");
+                                      },
+                                      child: Text("Free")
+                                  ) :
+                              RaisedButton(
+                                  elevation: 10,
+                                  color: Colors.white,
+                                  onPressed: (){
+                                    print("Todo: Get or buy the rute");
+                                  },
+                                  child: Text("Buy")
+                              )
                             ),
                           ],
                         )
@@ -264,6 +408,11 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
   Future getFileUrl(data) async {
     String url = await data.listAll();
     return url;
+  }
+
+  Future getRouteRatings(String routeId) async {
+    DocumentSnapshot snapshot = await firestore.collection('routes_ratings').document(routeId).get();
+    return snapshot;
   }
 
 }

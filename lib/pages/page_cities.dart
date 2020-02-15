@@ -49,6 +49,7 @@ class _CitiesPageState extends State<CitiesPage> {
                   gotoCityRoutes(citiesSnapshot.data[index].documentID, citiesSnapshot.data[index].data['name']);
                 },
                 child: Container(
+                  //height: 150,
                   child: Center(
                     child: Card(
                       elevation: 10,
@@ -57,6 +58,7 @@ class _CitiesPageState extends State<CitiesPage> {
                       ),
                       child: Center(
                         child: Stack(
+                          alignment: Alignment.center,
                           children: <Widget>[
                             FutureBuilder(
                               future: getCityImage(citiesSnapshot.data[index].documentID),
@@ -74,15 +76,29 @@ class _CitiesPageState extends State<CitiesPage> {
                                 }
                               },
                             ),
-                            Positioned.fill(
-                              child: Text(
-                                citiesSnapshot.data[index].data['name'],
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontSize: 30,
-                                  letterSpacing: 4,
+                            Opacity(
+                              opacity: 0.60,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[500],
+                                  borderRadius: BorderRadius.circular(30)
                                 ),
-                              ),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 20
+                                  ),
+                                  child:  Text(
+                                    citiesSnapshot.data[index].data['name'],
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontSize: 30,
+                                      letterSpacing: 4,
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                )
+                            ),
                             )
                           ],
                         ),
