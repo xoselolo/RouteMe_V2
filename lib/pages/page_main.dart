@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_route_me/pages/page_filters.dart';
 import 'package:flutter_route_me/pages/page_cities.dart';
+import 'package:flutter_route_me/pages/page_profile.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
 
 class MainPage extends StatefulWidget {
@@ -69,7 +70,7 @@ class _MainPageState extends State<MainPage> {
           //RoutesPage(),
           CitiesPage(),
           FiltersPage(),
-          Container(color: Colors.pink,)
+          ProfilePage()
         ],
       ),
     );

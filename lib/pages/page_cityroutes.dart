@@ -3,10 +3,12 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CityRoutesPage extends StatefulWidget {
@@ -289,28 +291,60 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
 
                             Align(
                               alignment: Alignment.bottomCenter,
-                              child: isFree ?
-                              RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
-                                ),
-                                elevation: 3,
-                                color: Colors.white,
-                                onPressed: (){
-                                  print("Todo: Get or buy the rute");
+                              child: FutureBuilder(
+                                future: userHasThisRoute(),
+                                builder: (_, thisRouteSnapshot){
+                                  if(thisRouteSnapshot.connectionState == ConnectionState.waiting){
+                                    return Container();
+                                  }else{
+                                    bool userHas = false;
+
+                                    List userRoutes = thisRouteSnapshot.data['routes'];
+                                    if(userRoutes == null || userRoutes.length == 0){
+                                      userHas = false;
+                                    }else{
+                                      int numRoutes = userRoutes.length;
+                                      String routeId = cityRoutesSnapshot.data[index].documentID;
+                                      for(int i = 0; i < numRoutes; i++){
+                                        if(userRoutes.elementAt(i) == routeId){
+                                          userHas = true;
+                                        }
+                                      }
+                                    }
+
+                                    return isFree ?
+                                    RaisedButton(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(18.0),
+                                        ),
+                                        elevation: userHas ? 0 : 3,
+                                        color: userHas ? Colors.grey : Colors.white,
+                                        onPressed: (){
+                                          if (userHas){
+                                            Fluttertoast.showToast(msg: "You already have this route!");
+                                          }else{
+                                            print("Todo: Get the route for free and add it on the database for the user");
+                                          }
+                                        },
+                                        child: Text("Free")
+                                    ) :
+                                    RaisedButton(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(18.0),
+                                        ),
+                                        elevation: userHas ? 0 : 3,
+                                        color: userHas ? Colors.grey : Colors.white,
+                                        onPressed: (){
+                                          if (userHas){
+                                            Fluttertoast.showToast(msg: "You already have this route!");
+                                          }else{
+                                            print("Todo: Buy the route and add it on the database for the user");
+                                          }
+                                        },
+                                        child: Text("Buy")
+                                    );
+                                  }
                                 },
-                                child: Text("Free")
-                              ) :
-                              RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18.0),
-                                ),
-                                elevation: 3,
-                                color: Colors.white,
-                                onPressed: (){
-                                  print("Todo: Get or buy the rute");
-                                },
-                                child: Text("Buy")
                               ),
                             ),
                           ],
@@ -338,9 +372,7 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
   }
 
   Future getRoutePhotos(String routeId) async {
-    //HashMap<String, dynamic> map = new HashMap<String, dynamic>();
 
-    //List keys = new List();
     List values = new List();
     List<String> urls = new List<String>();
 
@@ -348,20 +380,14 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
       LinkedHashMap itemsMap = result['items'];
 
       itemsMap.forEach((key, value) async {
-        //keys.add(key);
         values.add(value);
 
         final ref = FirebaseStorage.instance.ref().child(value['path']);
         String url = await ref.getDownloadURL();
         urls.add(url);
-        //print(value);
       });
 
     });
-
-    //map.putIfAbsent("keys", () => keys);
-    //map.putIfAbsent("values", () => values);
-
     return urls;
   }
 
@@ -372,6 +398,14 @@ class _CityRoutesPageState extends State<CityRoutesPage> {
 
   Future getRouteRatings(String routeId) async {
     DocumentSnapshot snapshot = await firestore.collection('routes_ratings').document(routeId).get();
+    return snapshot;
+  }
+
+  Future userHasThisRoute() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    String userUID = user.uid;
+
+    DocumentSnapshot snapshot = await firestore.collection('user_routes').document(userUID).get();
     return snapshot;
   }
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_route_me/model/model_route.dart' as Routes;
 import 'package:flutter_route_me/model/request_manager/routes_manager.dart';
 import 'package:flutter_route_me/pages/page_navigate.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong/latlong.dart' as LL;
 import 'package:progress_dialog/progress_dialog.dart';
 
@@ -217,10 +218,10 @@ class _OrganizerPageState extends State<OrganizerPage> {
 
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.amber,
+          backgroundColor: Colors.white,
           child: Icon(
             Icons.add,
-            color: Colors.white,
+            color: Colors.red,
           ),
           onPressed: (){
             print("Add new stop");
@@ -241,9 +242,9 @@ class _OrganizerPageState extends State<OrganizerPage> {
                   height: 50,
                   child: Center(
                     child: RaisedButton(
-                      color: Colors.amber[400],
+                      elevation: 3,
+                      color: Colors.white,
                       onPressed: (){
-                        print("Navigate!");
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -259,22 +260,14 @@ class _OrganizerPageState extends State<OrganizerPage> {
                         //side: BorderSide(color: Colors.amber, width: 4)
                       ),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Image.asset(
-                            'assets/images/solo_logo_v1.png',
-                            width: 23,
-                            height: 23,
-                            color: Colors.white,
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
                           Text(
                             "Start!",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 23
-                            ),
+                            style: GoogleFonts.poppins(
+                              fontSize: 22,
+                              color: Colors.red
+                            )
                           )
                         ],
                       ),

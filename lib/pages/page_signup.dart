@@ -1,7 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_route_me/pages/page_filters.dart';
+import 'package:flutter_route_me/pages/page_main.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -68,8 +71,16 @@ class _SignUpPageState extends State<SignUpPage> {
       try{
         AuthResult authResult = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
         authResult.user.sendEmailVerification();
-        // TODO: Display for the user that we sent an email
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FiltersPage()));
+
+        final ref = FirebaseStorage.instance.ref().child('users/default.png');
+        String url = await ref.getDownloadURL();
+        UserUpdateInfo newInfoUpdate = UserUpdateInfo();
+        newInfoUpdate.photoUrl = url;
+        authResult.user.updateProfile(newInfoUpdate);
+
+        Fluttertoast.showToast(msg: "Please verify your email");
+
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
       }catch(e){
         print("Firebase auth error!");
         print(e.message);

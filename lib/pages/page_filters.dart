@@ -11,6 +11,7 @@ import 'package:flutter_route_me/model/request_manager/places_manager.dart';
 import 'package:flutter_route_me/model/request_manager/suggestions_manager.dart';
 import 'package:flutter_route_me/pages/page_organize.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
@@ -605,13 +606,13 @@ class _FiltersPageState extends State<FiltersPage> {
                 width: 200,
                 height: 50,
                 child: RaisedButton(
-                  color: Colors.red[400],
+                  color: Colors.white,
                   onPressed: (){
                     routeMe();
                   },
                   shape: RoundedRectangleBorder(
                       borderRadius: new BorderRadius.circular(18.0),
-                      side: BorderSide(color: Colors.red[400], width: 4)
+                      side: BorderSide(color: Colors.red[400], width: 2)
                   ),
                   child: Row(
                     children: <Widget>[
@@ -619,17 +620,16 @@ class _FiltersPageState extends State<FiltersPage> {
                         'assets/images/solo_logo_v1.png',
                         width: 23,
                         height: 23,
-                        color: Colors.white,
+                        color: Colors.red,
                       ),
                       SizedBox(
                         width: 8,
                       ),
                       Text(
                         "Route me!",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 23
-                        ),
+                        style: GoogleFonts.poppins(
+                          fontSize: 23
+                        )
                       )
                     ],
                   ),
