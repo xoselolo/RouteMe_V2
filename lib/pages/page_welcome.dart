@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_route_me/pages/page_filters.dart';
+import 'package:flutter_route_me/pages/page_forgotpassword.dart';
 import 'package:flutter_route_me/pages/page_main.dart';
 import 'package:flutter_route_me/pages/page_signup.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class WelcomePage extends StatefulWidget {
   @override
@@ -14,6 +16,12 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   String _email, _password;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool passwordNotVisible;
+
+  @override
+  void initState() {
+    passwordNotVisible = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,51 +29,219 @@ class _WelcomePageState extends State<WelcomePage> {
       appBar: RouteMeAppBar(
         pageIndex: -1
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: <Widget>[
-            TextFormField(
-              validator: (input){
-                if(input.isEmpty){
-                  return 'Please type an email';
-                }
-              },
-              onSaved: (input){
-                _email = input;
-              },
-              decoration: InputDecoration(
-                labelText: 'Email'
-              ),
-            ),
-            TextFormField(
-              validator: (input){
-                if(input.length < 6){
-                  return 'Your password needs to be at least 6 characters';
-                }
-              },
-              onSaved: (input){
-                _password = input;
-              },
-              decoration: InputDecoration(
-                  labelText: 'Password'
-              ),
-              obscureText: true,
-            ),
-            RaisedButton(
-              onPressed: signIn,
-              child: Text('Sign in'),
-            ),
-            RaisedButton(
-              onPressed: goToSignUpPage,
-              child: Text('Sign Up'),
-            )
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: const FractionalOffset(0.5, 0.0),
+            end: const FractionalOffset(0.0, 0.5), //
+            stops: [0.5, 1.0],// 10% of the width, so there are ten blinds.
+            colors: [Colors.red[300], Colors.redAccent[200]],
+            //colors: [Colors.red[300], Colors.orange[200]],
+          ),
         ),
-      ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: TextFormField(
+                  validator: (input){
+                    if(input.isEmpty){
+                      return 'Please type an email';
+                    }
+                  },
+                  onSaved: (input){
+                    _email = input;
+                  },
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: TextStyle(
+                        color: Colors.white
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    enabledBorder:  UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.white
+                      )
+                    ),
+                  ),
+                  cursorColor: Colors.white,
+                ),
+              ),
+              SizedBox(
+                height: 0,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: TextFormField(
+                  validator: (input){
+                    if(input.length < 6){
+                      return 'Your password needs to be at least 6 characters';
+                    }
+                  },
+                  onSaved: (input){
+                    _password = input;
+                  },
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    labelStyle: TextStyle(
+                        color: Colors.white
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    enabledBorder:  UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        passwordNotVisible ? Icons.visibility : Icons.visibility_off,
+                        color: Colors.white,
+                      ),
+                      onPressed: (){
+                        setState(() {
+                          passwordNotVisible = !passwordNotVisible;
+                        });
+                      },
+                    )
+                  ),
+                  cursorColor: Colors.white,
+                  obscureText: !passwordNotVisible,
+                ),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 50,
+                  vertical: 2
+                ),
+                child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                    elevation: 3,
+                    color: Colors.white,
+                    onPressed: (){
+                      signIn();
+                    },
+                    child: Text("Sign In")
+                ),
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Center(
+                child: GestureDetector(
+                  child: Text(
+                    "I forgot my password",
+                    style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline
+                    ),
+                  ),
+                  onTap: (){
+                    goToForgotpasswordPage();
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 50,
+                  vertical: 2
+                ),
+                child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                    elevation: 3,
+                    color: Colors.white,
+                    onPressed: goToSignUpPage,
+                    child: Text("Sign Up")
+                ),
+              )
+            ],
+          ),
+        ),
+      )
     );
   }
 
+  /*
+  Row(
+              children: <Widget>[
+                Flexible(
+                  flex: 4,
+                  child: Divider(
+                    thickness: .5,
+                    color: Colors.red,
+                  ),
+                ),
+                SizedBox(
+                  width: 4,
+                ),
+                Flexible(
+                  flex: 5,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Sign in",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14
+                      ),
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 4,
+                ),
+                Flexible(
+                  flex: 4,
+                  child: Divider(
+                    thickness: .5,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+   */
 
   Future<void> signIn() async{
     final formState = _formKey.currentState;
@@ -84,5 +260,9 @@ class _WelcomePageState extends State<WelcomePage> {
 
   void goToSignUpPage() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
+  }
+
+  void goToForgotpasswordPage() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPasswordPage()));
   }
 }
