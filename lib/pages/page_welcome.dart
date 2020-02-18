@@ -5,6 +5,8 @@ import 'package:flutter_route_me/pages/page_forgotpassword.dart';
 import 'package:flutter_route_me/pages/page_main.dart';
 import 'package:flutter_route_me/pages/page_signup.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -26,6 +28,7 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       appBar: RouteMeAppBar(
         pageIndex: -1
       ),
@@ -37,8 +40,8 @@ class _WelcomePageState extends State<WelcomePage> {
             stops: [0.5, 1.0],// 10% of the width, so there are ten blinds.
             colors: [Colors.red[300], Colors.redAccent[200]],
             //colors: [Colors.red[300], Colors.orange[200]],
+            ),
           ),
-        ),
         child: Form(
           key: _formKey,
           child: Column(
@@ -125,7 +128,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        passwordNotVisible ? Icons.visibility : Icons.visibility_off,
+                        passwordNotVisible ? Icons.visibility_off : Icons.visibility,
                         color: Colors.white,
                       ),
                       onPressed: (){
@@ -136,7 +139,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     )
                   ),
                   cursorColor: Colors.white,
-                  obscureText: !passwordNotVisible,
+                  obscureText: passwordNotVisible,
                 ),
               ),
               SizedBox(
@@ -160,7 +163,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
               ),
               SizedBox(
-                height: 4,
+                height: 10,
               ),
               Center(
                 child: GestureDetector(
@@ -178,7 +181,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 20,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(
@@ -193,6 +196,51 @@ class _WelcomePageState extends State<WelcomePage> {
                     color: Colors.white,
                     onPressed: goToSignUpPage,
                     child: Text("Sign Up")
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 2
+                ),
+                child: Divider(
+                  thickness: 2,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 50,
+                  vertical: 2
+                ),
+                child: SignInButton(
+                  Buttons.Google,
+                  onPressed: (){
+                    // ToDO: SignIn with google account
+                    Fluttertoast.showToast(msg: "Log in con Google");
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: 50,
+                    vertical: 2
+                ),
+                child: SignInButton(
+                  Buttons.Facebook,
+                  onPressed: (){
+                    // ToDO: SignIn with facebook account
+                    Fluttertoast.showToast(msg: "Log in con Google");
+                  },
                 ),
               )
             ],

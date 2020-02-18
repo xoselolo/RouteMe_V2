@@ -5,6 +5,7 @@ import 'package:flutter_route_me/pages/page_filters.dart';
 import 'package:flutter_route_me/pages/page_main.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -13,79 +14,282 @@ class SignUpPage extends StatefulWidget {
 
 
 class _SignUpPageState extends State<SignUpPage> {
-  String _email, _password;
+  String _email, _password, _name, _repeatPassword;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool repeatPasswordNotVisible, passwordNotVisible;
+
+  @override
+  void initState() {
+    repeatPasswordNotVisible = true;
+    passwordNotVisible = true;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       appBar: RouteMeAppBar(
         pageIndex: -1
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: <Widget>[
-            TextFormField(
-              validator: (input){
-                if(input.isEmpty){
-                  return 'Please type an email';
-                }
-              },
-              onSaved: (input){
-                _email = input;
-              },
-              decoration: InputDecoration(
-                  labelText: 'Email'
-              ),
-            ),
-            TextFormField(
-              validator: (input){
-                if(input.length < 6){
-                  return 'Your password needs to be at least 6 characters';
-                }
-              },
-              onSaved: (input){
-                _password = input;
-              },
-              decoration: InputDecoration(
-                  labelText: 'Password'
-              ),
-              obscureText: true,
-            ),
-            RaisedButton(
-              onPressed: signUp,
-              child: Text('Sign up'),
-            )
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: const FractionalOffset(0.5, 0.0),
+            end: const FractionalOffset(0.0, 0.5), //
+            stops: [0.5, 1.0], // 10% of the width, so there are ten blinds.
+            colors: [Colors.red[300], Colors.redAccent[200]],
+            //colors: [Colors.red[300], Colors.orange[200]],
+          ),
         ),
-      ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: TextFormField(
+                  validator: (input){
+                    if(input.isEmpty){
+                      return 'Please type a name';
+                    }
+                  },
+                  onChanged: (input){
+                    _name = input;
+                  },
+                  onSaved: (input){
+                    _name = input;
+                  },
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Name',
+                    labelStyle: TextStyle(
+                        color: Colors.white
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    enabledBorder:  UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                  ),
+                  cursorColor: Colors.white,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: TextFormField(
+                  validator: (input){
+                    if(input.isEmpty){
+                      return 'Please type an email';
+                    }
+                  },
+                  onChanged: (input){
+                    _email = input;
+                  },
+                  onSaved: (input){
+                    _email = input;
+                  },
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: TextStyle(
+                        color: Colors.white
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    enabledBorder:  UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                  ),
+                  cursorColor: Colors.white,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: TextFormField(
+                  validator: (input){
+                    if(input.isEmpty){
+                      return 'Please type a password';
+                    }
+                  },
+                  onChanged: (input){
+                    _password = input;
+                  },
+                  onSaved: (input){
+                    _password = input;
+                  },
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        passwordNotVisible ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.white,
+                      ),
+                      onPressed: (){
+                        setState(() {
+                          passwordNotVisible = !passwordNotVisible;
+                        });
+                      },
+                    ),
+                    labelText: 'Password',
+                    labelStyle: TextStyle(
+                        color: Colors.white
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    enabledBorder:  UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                  ),
+                  cursorColor: Colors.white,
+                  obscureText: passwordNotVisible,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: TextFormField(
+                  validator: (input){
+                    if(input.isEmpty){
+                      return 'Please type the password again';
+                    }
+                  },
+                  onChanged: (input){
+                    _repeatPassword = input;
+                  },
+                  onSaved: (input){
+                    _repeatPassword = input;
+                  },
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  obscureText: repeatPasswordNotVisible,
+                  decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        repeatPasswordNotVisible ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.white,
+                      ),
+                      onPressed: (){
+                        setState(() {
+                          repeatPasswordNotVisible = !repeatPasswordNotVisible;
+                        });
+                      },
+                    ),
+                    labelText: 'Repeat password',
+                    labelStyle: TextStyle(
+                        color: Colors.white
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    enabledBorder:  UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                    border: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.white
+                        )
+                    ),
+                  ),
+                  cursorColor: Colors.white,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: 50,
+                    vertical: 2
+                ),
+                child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                    elevation: 3,
+                    color: Colors.white,
+                    onPressed: signUp,
+                    child: Text("Sign Up")
+                ),
+              )
+            ],
+          ),
+        ),
+      )
     );
   }
 
 
   Future<void> signUp() async{
     final formState = _formKey.currentState;
-    if(formState.validate()){
-      formState.save();
-      try{
-        AuthResult authResult = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
-        authResult.user.sendEmailVerification();
+    if(_password == _repeatPassword){
+      if(formState.validate()){
+        formState.save();
+        try{
+          AuthResult authResult = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
 
-        final ref = FirebaseStorage.instance.ref().child('users/default.png');
-        String url = await ref.getDownloadURL();
-        UserUpdateInfo newInfoUpdate = UserUpdateInfo();
-        newInfoUpdate.photoUrl = url;
-        authResult.user.updateProfile(newInfoUpdate);
+          final ref = FirebaseStorage.instance.ref().child('users/default.png');
+          String url = await ref.getDownloadURL();
+          UserUpdateInfo newInfoUpdate = UserUpdateInfo();
+          newInfoUpdate.photoUrl = url;
+          newInfoUpdate.displayName = _name;
+          authResult.user.updateProfile(newInfoUpdate);
 
-        Fluttertoast.showToast(msg: "Please verify your email");
+          authResult.user.sendEmailVerification();
 
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
-      }catch(e){
-        print("Firebase auth error!");
-        print(e.message);
+          Fluttertoast.showToast(msg: "Please verify your email");
+
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+        }catch(e){
+          print("Firebase auth error!");
+          print(e.message);
+        }
       }
     }
-
   }
 }

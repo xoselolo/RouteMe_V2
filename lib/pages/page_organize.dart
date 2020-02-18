@@ -279,7 +279,6 @@ class _OrganizerPageState extends State<OrganizerPage> {
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
         resizeToAvoidBottomPadding: false,
       appBar: RouteMeAppBarWithSave(),
       body: Column(
