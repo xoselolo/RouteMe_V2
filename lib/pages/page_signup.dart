@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_route_me/pages/page_filters.dart';
+import 'package:flutter_route_me/model/firebase_management/user_management.dart';
 import 'package:flutter_route_me/pages/page_main.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -38,7 +37,7 @@ class _SignUpPageState extends State<SignUpPage> {
             begin: const FractionalOffset(0.5, 0.0),
             end: const FractionalOffset(0.0, 0.5), //
             stops: [0.5, 1.0], // 10% of the width, so there are ten blinds.
-            colors: [Colors.red[300], Colors.redAccent[200]],
+            colors: [Colors.redAccent[200], Colors.red[300]],
             //colors: [Colors.red[300], Colors.orange[200]],
           ),
         ),
@@ -273,19 +272,31 @@ class _SignUpPageState extends State<SignUpPage> {
         try{
           AuthResult authResult = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
 
-          final ref = FirebaseStorage.instance.ref().child('users/default.png');
-          String url = await ref.getDownloadURL();
           UserUpdateInfo newInfoUpdate = UserUpdateInfo();
-          newInfoUpdate.photoUrl = url;
+          newInfoUpdate.photoUrl = null;
           newInfoUpdate.displayName = _name;
-          authResult.user.updateProfile(newInfoUpdate);
 
-          authResult.user.sendEmailVerification();
+          await authResult.user.updateProfile(newInfoUpdate);
+          FirebaseUser user = await FirebaseAuth.instance.currentUser();
 
-          Fluttertoast.showToast(msg: "Please verify your email");
+          bool userOK = await UserManagement().storeNewMailUser(user, context);
 
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+          if (userOK){
+
+            authResult.user.sendEmailVerification();
+
+            Fluttertoast.showToast(msg: "Please verify your email");
+
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+          }else{
+            await authResult.user.delete();
+            Fluttertoast.showToast(msg: "Error on create new user");
+          }
+
         }catch(e){
+          Fluttertoast.showToast(
+            msg: e.message,
+          );
           print("Firebase auth error!");
           print(e.message);
         }

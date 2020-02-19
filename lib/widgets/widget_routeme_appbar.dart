@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -35,7 +36,7 @@ class _CustomAppBarState extends State<RouteMeAppBar>{
           width: 20,
           height: 20,
           color: Colors.white,
-        ),
+        )
       ),
       actions: <Widget>[
         IconButton(
@@ -66,5 +67,10 @@ class _CustomAppBarState extends State<RouteMeAppBar>{
 
   void showEdit() {
     print("Edit");
+  }
+
+  Future getUserName() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    return user.displayName;
   }
 }

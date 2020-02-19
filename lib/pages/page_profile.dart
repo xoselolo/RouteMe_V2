@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_route_me/pages/page_welcome.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key key}) : super(key: key);
@@ -34,7 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         SizedBox(
-          height: 15,
+          height: 20,
         ),
         GestureDetector(
           onTap: (){
@@ -43,14 +44,18 @@ class _ProfilePageState extends State<ProfilePage> {
             print("Todo: change profile photo");
           },
           child: Container(
-            width: 200,
-            height: 200,
+            width: 120,
+            height: 120,
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey),
                 shape: BoxShape.circle,
                 image: DecorationImage(
                     fit: BoxFit.fill,
-                    image: NetworkImage(
+                    image: user.photoUrl == null ?
+                    AssetImage(
+                        'assets/images/user_default_image.png'
+                    ) :
+                    NetworkImage(
                         user.photoUrl
                     )
                 )
@@ -58,8 +63,30 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         SizedBox(
-          height: 10,
+          height: 20,
         ),
+
+        Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: 50,
+              vertical: 2
+          ),
+          child: RaisedButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
+              ),
+              elevation: 3,
+              color: Colors.white,
+              onPressed: (){
+                FirebaseAuth.instance.signOut().then((value){
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomePage()));
+                }).catchError((e){
+                  print(e);
+                });
+              },
+              child: Text("Sign Up")
+          ),
+        )
 
       ],
     );

@@ -37,7 +37,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               begin: const FractionalOffset(0.5, 0.0),
               end: const FractionalOffset(0.0, 0.5), //
               stops: [0.5, 1.0], // 10% of the width, so there are ten blinds.
-              colors: [Colors.red[300], Colors.redAccent[200]],
+              colors: [Colors.redAccent[200], Colors.red[300]],
               //colors: [Colors.red[300], Colors.orange[200]],
             ),
           ),
@@ -132,13 +132,20 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   Future<void> sendPasswordEmail() async {
-    FirebaseAuth.instance.sendPasswordResetEmail(email: _email);
-    Navigator.pop(context);
-    Fluttertoast.showToast(
-      msg: "Password reset email has been sent!",
-      toastLength: Toast.LENGTH_LONG,
-      backgroundColor: Colors.black38,
-      textColor: Colors.white
-    );
+    try{
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: _email);
+      Navigator.pop(context);
+      Fluttertoast.showToast(
+          msg: "Password reset email has been sent!",
+          toastLength: Toast.LENGTH_LONG,
+          backgroundColor: Colors.black38,
+          textColor: Colors.white
+      );
+    }catch(e){
+      Fluttertoast.showToast(msg: e.message);
+      print("Firebase auth error!");
+      print(e.message);
+    }
+
   }
 }

@@ -38,7 +38,7 @@ class _WelcomePageState extends State<WelcomePage> {
             begin: const FractionalOffset(0.5, 0.0),
             end: const FractionalOffset(0.0, 0.5), //
             stops: [0.5, 1.0],// 10% of the width, so there are ten blinds.
-            colors: [Colors.red[300], Colors.redAccent[200]],
+            colors: [Colors.redAccent[200], Colors.red[300]],
             //colors: [Colors.red[300], Colors.orange[200]],
             ),
           ),
@@ -250,47 +250,6 @@ class _WelcomePageState extends State<WelcomePage> {
     );
   }
 
-  /*
-  Row(
-              children: <Widget>[
-                Flexible(
-                  flex: 4,
-                  child: Divider(
-                    thickness: .5,
-                    color: Colors.red,
-                  ),
-                ),
-                SizedBox(
-                  width: 4,
-                ),
-                Flexible(
-                  flex: 5,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Sign in",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14
-                      ),
-                      textAlign: TextAlign.end,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 4,
-                ),
-                Flexible(
-                  flex: 4,
-                  child: Divider(
-                    thickness: .5,
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-   */
-
   Future<void> signIn() async{
     final formState = _formKey.currentState;
     if(formState.validate()){
@@ -299,6 +258,9 @@ class _WelcomePageState extends State<WelcomePage> {
         AuthResult authResult = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password);
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
       }catch(e){
+        Fluttertoast.showToast(
+          msg: "Email or password incorrect! Please try again.",
+        );
         print("Firebase auth error!");
         print(e.message);
       }
