@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_route_me/model/firebase_management/user_management.dart';
 import 'package:flutter_route_me/pages/page_filters.dart';
 import 'package:flutter_route_me/pages/page_forgotpassword.dart';
 import 'package:flutter_route_me/pages/page_main.dart';
 import 'package:flutter_route_me/pages/page_signup.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,9 +23,12 @@ class _WelcomePageState extends State<WelcomePage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool passwordNotVisible;
 
+  Firestore firestore;
+
   @override
   void initState() {
     passwordNotVisible = true;
+    firestore = Firestore.instance;
   }
 
   @override
@@ -255,8 +261,53 @@ class _WelcomePageState extends State<WelcomePage> {
     if(formState.validate()){
       formState.save();
       try{
-        AuthResult authResult = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password);
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+        FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password).then((auth){
+          final storage = new FlutterSecureStorage();
+          storage.read(key: "routeMeJWT").then((token){
+            if(token == null){
+              // TODO: search document by uid
+              Firestore.instance
+                  .collection('users')
+                  .where('uid', isEqualTo: auth.user.uid).getDocuments().then((documents){
+                    if(documents.documents.length == 0){
+                      // TODO: create user entry on database
+                      UserManagement().storeNewMailUser(auth.user, _password, context).then((doc){
+                        storage.write(
+                          key: 'routeMeJWT',
+                          value: doc.documentID,
+                        ).then((value){
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+                        });
+                      });
+                    }else{
+                      // TODO: update last time
+                      firestore.collection('users').document(documents.documents.elementAt(0).documentID).updateData({
+                        'lastTime' : DateTime.now()
+                      }).then((value){
+                        // Create storage
+                        // Write value
+                        storage.write(
+                          key: 'routeMeJWT',
+                          value: documents.documents.elementAt(0).documentID,
+                        ).then((value){
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+                        });
+                      });
+                    }
+              });
+              // TODO: save new token
+            }else{
+              firestore.collection('users').document(token).updateData({
+                'lastTime' : DateTime.now()
+              }).then((value){
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+              });
+            }
+          });
+
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+        });
+
       }catch(e){
         Fluttertoast.showToast(
           msg: "Email or password incorrect! Please try again.",

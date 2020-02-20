@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_route_me/model/firebase_management/user_management.dart';
 import 'package:flutter_route_me/pages/page_main.dart';
 import 'package:flutter_route_me/widgets/widget_routeme_appbar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -279,9 +281,18 @@ class _SignUpPageState extends State<SignUpPage> {
           await authResult.user.updateProfile(newInfoUpdate);
           FirebaseUser user = await FirebaseAuth.instance.currentUser();
 
-          bool userOK = await UserManagement().storeNewMailUser(user, context);
+          DocumentReference doc = await UserManagement().storeNewMailUser(user, _password, context);
 
-          if (userOK){
+          if (doc != null){
+
+            // Create storage
+            final storage = new FlutterSecureStorage();
+
+            // Write value
+            await storage.write(
+                key: 'routeMeJWT',
+                value: doc.documentID,
+            );
 
             authResult.user.sendEmailVerification();
 

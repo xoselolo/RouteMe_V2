@@ -1,21 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/src/widgets/framework.dart';
 
 class UserManagement{
-  Future<bool> storeNewMailUser(user, context) async{
+  Future<DocumentReference> storeNewMailUser(user, password, context) async{
 
-    await Firestore.instance.collection('/users').add({
+    DocumentReference doc = await Firestore.instance.collection('/users').add({
       'uid' : user.uid,
       'name' : user.displayName,
       'email' : user.email,
+      'password' : password,
       'photoUrl' : user.photoUrl,
       'role' : 'normal',
       'accountType' : 'mail',
       'lastTime' : DateTime.now()
     }).catchError((e){
       print(e);
-      return false;
+      return null;
     });
 
-    return true;
+    return doc;
   }
 }
