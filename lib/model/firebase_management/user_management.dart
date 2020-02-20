@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 class UserManagement{
   Future<bool> storeNewMailUser(user, context) async{
@@ -12,7 +9,8 @@ class UserManagement{
       'email' : user.email,
       'photoUrl' : user.photoUrl,
       'role' : 'normal',
-      'accountType' : 'mail'
+      'accountType' : 'mail',
+      'lastTime' : DateTime.now()
     }).catchError((e){
       print(e);
       return false;

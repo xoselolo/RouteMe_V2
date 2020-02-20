@@ -32,18 +32,24 @@ class _SplashPageState extends State<SplashPage> {
     return Scaffold(
       body: Center(
         child: Animator<double>(
-          tween: Tween<double>(begin: 0, end: 300),
+          curve: Curves.easeOutCirc,
+          tween: Tween<double>(begin: 100, end: 300),
+          duration: Duration(seconds: 1),
           cycles: 0,
           builder: (anim) => Center(
             child: Container(
               margin: EdgeInsets.symmetric(vertical: 10),
               height: anim.value,
               width: anim.value,
-              child: FlutterLogo(),
+              child: Image.asset(
+                'assets/images/solo_logo_v1.png',
+                width: 20,
+                height: 20,
+                color: Colors.red,
+              ),
             ),
           ),
           endAnimationListener: (param){
-
           },
         ),
       ),
