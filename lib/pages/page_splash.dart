@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:animator/animator.dart';
@@ -40,6 +41,10 @@ class _SplashPageState extends State<SplashPage> {
       if(token == null){
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomePage()));
       }else{
+        // [ERROR] - Usuario no loggeado no puede acceder
+        //  Podriamos:
+        //      + guardar (email + password / otro tipo de user en el token)
+        //      + --> crear web tokens correctamente <--
         firestore.collection('users').document(token).get().then((snapshot){
           Timestamp timestamp = snapshot.data['lastTime'];
           DateTime last = DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch);
@@ -47,17 +52,26 @@ class _SplashPageState extends State<SplashPage> {
             // TODO: token caducado
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomePage()));
           }else{
-            FirebaseAuth.instance.signInWithEmailAndPassword(email: snapshot.data['email'], password: snapshot.data['password']).then((value){
+            FirebaseAuth.instance.signInWithEmailAndPassword(
+                email: snapshot.data['email'],
+                password: snapshot.data['password']
+            ).then((auth){
               // TODO: update last and enter
               firestore.collection('users').document(token).updateData({
                 'lastTime' : DateTime.now()
               }).then((value){
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
-              });
+                //FirebaseAuth.instance.currentUser().then((user){
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage(auth.user)));
+                });
+              //});
             });
           }
         });
       }
+    }).catchError((e){
+      print("Error");
+      print(e);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomePage()));
     });
   }
 

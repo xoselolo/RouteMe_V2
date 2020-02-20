@@ -62,6 +62,23 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ),
+
+        SizedBox(
+          height: 8,
+        ),
+
+        Text(
+          user.displayName
+        ),
+
+        SizedBox(
+          height: 4,
+        ),
+
+        Text(
+            user.email
+        ),
+
         SizedBox(
           height: 20,
         ),
@@ -84,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   print(e);
                 });
               },
-              child: Text("Sign Up")
+              child: Text("Sign out")
           ),
         )
 

@@ -276,7 +276,7 @@ class _WelcomePageState extends State<WelcomePage> {
                           key: 'routeMeJWT',
                           value: doc.documentID,
                         ).then((value){
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage(auth.user)));
                         });
                       });
                     }else{
@@ -290,7 +290,7 @@ class _WelcomePageState extends State<WelcomePage> {
                           key: 'routeMeJWT',
                           value: documents.documents.elementAt(0).documentID,
                         ).then((value){
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage(auth.user)));
                         });
                       });
                     }
@@ -300,12 +300,12 @@ class _WelcomePageState extends State<WelcomePage> {
               firestore.collection('users').document(token).updateData({
                 'lastTime' : DateTime.now()
               }).then((value){
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage(auth.user)));
               });
             }
           });
 
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage(auth.user)));
         });
 
       }catch(e){

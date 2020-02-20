@@ -298,7 +298,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
             Fluttertoast.showToast(msg: "Please verify your email");
 
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage(user)));
           }else{
             await authResult.user.delete();
             Fluttertoast.showToast(msg: "Error on create new user");
